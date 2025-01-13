@@ -1,7 +1,7 @@
 import Express, { Application, Request, Response } from "express";
 import { CustomError } from "./lib/errors/customError";
-import { errorHandler } from "./middleware/globelErrorHandler";
 import { port } from "./lib/constants";
+import { errorHandler } from "./middleware/GlobelErrorHandler";
 
 
 const app: Application = Express();

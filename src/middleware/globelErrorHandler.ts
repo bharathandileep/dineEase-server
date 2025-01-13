@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { errorBody } from "../lib/interfaces/errorbody.interface";
 import { node_env } from "../lib/constants";
 
-
 export const errorHandler = (
   error: Error & { statusCode?: number; status?: string },
   req: Request,
@@ -19,4 +18,3 @@ export const errorHandler = (
   }
   res.status(errorBody.statusCode).json(errorBody);
 };
- 
