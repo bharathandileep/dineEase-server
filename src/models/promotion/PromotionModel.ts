@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { PromotionSchema} from '../../schema/promotion/PromotionSchema';
+import { PromotionSchema} from '../../schema/promotion.schema/PromotionSchema';
 
 // Define the interface for the Promotion document
 export interface IPromotion extends Document {

@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { MenuSchema} from '../../schema/menu/MenuSchema';
+import { MenuSchema} from '../../schema/menu.schema/MenuSchema';
 
 export interface IMenu extends Document {
   kitchen_id: mongoose.Types.ObjectId; 

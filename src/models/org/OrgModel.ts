@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { OrganisationSchema } from '../../schema/org/OrgSchema';
+import { OrganisationSchema } from '../../schema/org.schema/OrgSchema';
 
 // Define the interface for the Organisation document
 export interface IOrganisation extends Document {

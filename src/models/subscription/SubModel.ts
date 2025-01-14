@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { SubscriptionSchema} from '../../schema/subscription/SubSchema';
+import { SubscriptionSchema} from '../../schema/subscription.schema/SubSchema';
 
 export interface ISubscription extends Document {
   user_id: mongoose.Types.ObjectId; 

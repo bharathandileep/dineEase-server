@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { OfferSchema} from '../../schema/offers/OfferSchema';
+import { OfferSchema} from '../../schema/offers.schema/OfferSchema';
 
 // Define the interface for the Promotion document
 export interface IOffer extends Document {

@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { FeedbackSchema} from '../../schema/feedback/FeedbackSchema';
+import { FeedbackSchema} from '../../schema/feedback.schema/FeedbackSchema';
 
 
 export interface IFeedback extends Document {

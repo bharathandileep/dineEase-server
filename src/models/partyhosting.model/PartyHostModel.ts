@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { PartyHostingSchema } from '../../schema/party/PartyHostSchema';
+import { PartyHostingSchema } from '../../schema/partyhosting.schema/PartyHostSchema';
 
 // Define the interface for the Party Hosting document
 export interface IPartyHosting extends Document {
