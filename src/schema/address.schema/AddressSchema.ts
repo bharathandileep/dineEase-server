@@ -40,3 +40,4 @@ export const AddressSchema: Schema = new Schema<IAddress>(
 // Create and export the Address model
 const Address = mongoose.model<IAddress>('Address', AddressSchema);
 export default Address;
+  
