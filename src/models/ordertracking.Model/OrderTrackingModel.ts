@@ -8,6 +8,7 @@ export interface IOrderTracking extends Document {
   location_id: mongoose.Types.ObjectId;       // Reference to the Location schema
   created_at: Date;                           // Timestamp when the tracking record was created
   updated_at: Date;                           // Timestamp when the tracking record was last updated
+  is_deleted: boolean;
 }
 const OrderTracking = mongoose.model<IOrderTracking>('OrderTracking', OrderTrackingSchema);
 export default OrderTracking;

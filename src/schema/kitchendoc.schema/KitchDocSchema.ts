@@ -7,8 +7,8 @@ export interface IKitchenDocumentation extends Document {
   issue_date: Date; 
   issuing_authority: string; 
   document_image: string; 
-  created_at: Date; 
-  updated_at: Date; 
+  is_deleted: boolean;                      
+
 }
 
 
@@ -19,6 +19,7 @@ export const KitchenDocumentationSchema: Schema<IKitchenDocumentation> = new Sch
       ref: 'Kitchen',
       required: true
     },
+    
     license_type: { type: String, required: true },
     issue_date: { type: Date, required: true },
     issuing_authority: { type: String, required: true },

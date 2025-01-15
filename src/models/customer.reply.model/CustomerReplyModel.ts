@@ -7,6 +7,8 @@ export interface ICustomerReply extends Document {
   chat_id: string;                             // Unique chat ID from CustomerSupport schema
   reply_content: string;                       // Content of the customer reply
   created_at: Date;                            // Timestamp when the reply was made
+  is_deleted: boolean;                 
+
 }
 const CustomerReply : Model<ICustomerReply> = mongoose.model<ICustomerReply>('CustomerReply',CustomerReplySchema)
 export default CustomerReply;

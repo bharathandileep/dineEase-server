@@ -1,30 +1,36 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-// Define the interface for the Feedback document
+
 export interface IFeedback extends Document {
-  entity_id: mongoose.Types.ObjectId; // Reference to Kitchen or Organization
-  entity_type: 'Kitchen' | 'Organization'; // Type of the entity
-  feedback_text: string; // Feedback provided
-  rating: number; // Rating (1-5, for example)
+  entity_id: mongoose.Types.ObjectId;
+  entity_type: 'Kitchen' | 'Organization'; 
+  feedback_text: string; 
+  rating: number; 
   created_at: Date;
   updated_at: Date;
+  is_deleted: boolean;                 
+
 }
 
-// Define the Feedback schema
+
 export const FeedbackSchema: Schema<IFeedback> = new Schema(
   {
     entity_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: 'entity_type' // Dynamic reference to either Kitchen or Organization
+      refPath: 'entity_type' 
     },
     entity_type: {
       type: String,
-      enum: ['Kitchen', 'Organization'], // Restrict the values to 'Kitchen' or 'Organization'
+      enum: ['Kitchen', 'Organization'], 
       required: true
     },
+    is_deleted: { 
+      type: Boolean, 
+      default: false 
+    }, 
     feedback_text: { type: String, required: true },
-    rating: { type: Number, required: true, min: 1, max: 5 }, // Rating (1 to 5)
+    rating: { type: Number, required: true, min: 1, max: 5 }, 
   },
   { timestamps: true }
 );

@@ -12,6 +12,8 @@ export interface IPartyHosting extends Document {
   food_items: string[]; 
   image_or_poster: string; 
   payment_ref: mongoose.Types.ObjectId; 
+  is_deleted: boolean;
+
   created_at: Date;
   updated_at: Date; 
 }
@@ -32,6 +34,10 @@ export const PartyHostingSchema: Schema<IPartyHosting> = new Schema(
     host_number: { type: String, required: true },
     food_items: { type: [String], required: true }, 
     image_or_poster: { type: String, required: true }, 
+    is_deleted: { 
+      type: Boolean, 
+      default: false 
+    }, 
     payment_ref: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Payment', 

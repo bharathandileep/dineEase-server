@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, model } from 'mongoose';
 
-// Define an interface for the User document
+
 export interface IUser extends Document {
   full_name: string;
   username: string;
@@ -8,6 +8,8 @@ export interface IUser extends Document {
   phone_number: string;
   profile_photo?: string;
   is_deleted: boolean;
+  date_of_birth: Date;
+  gender: 'Male' | 'Female' | 'Other';
   created_at: Date;
   updated_at: Date;
 }
@@ -21,8 +23,9 @@ export const UserSchema: Schema = new Schema<IUser>(
     phone_number: { type: String, unique: true, required: true },
     profile_photo: { type: String, default: null },
     is_deleted: { type: Boolean, default: false },
-    created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now }
+    date_of_birth: { type: Date, required: true },
+    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    
   },
   { timestamps: true }
 );

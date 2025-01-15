@@ -13,6 +13,8 @@ export interface ICustomerSupport extends Document {
   attachments: string[];                     // Array of attachment URLs or file paths
   created_at: Date;                          // Timestamp when the support request was created
   updated_at: Date;                          // Timestamp when the support request was last updated
+  is_deleted: boolean;                 
+
 }
 
 const CustomerSupport :Model<ICustomerSupport> = mongoose.model<ICustomerSupport>('CustomerSupport',CustomerSupportSchema)

@@ -8,7 +8,8 @@ export interface IBulkOrders extends Document {
   order_date: Date;                          // Date of placing the order
   delivery_date: Date;                       // Date of delivery
   address_id: mongoose.Types.ObjectId;       // Reference to the Address schema
-  created_at: Date;                          // Timestamp when the order was created
+  is_deleted: boolean;                 
+   created_at: Date;                          // Timestamp when the order was created
   updated_at: Date;                          // Timestamp when the order was last updated
 }
 

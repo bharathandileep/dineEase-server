@@ -16,6 +16,8 @@ export interface IEmployeeManagement extends Document {
   profile_picture: string;                     // URL or file path for the employee's profile picture
   created_at: Date;                            // Timestamp when the record was created
   updated_at: Date;                            // Timestamp when the record was last updated
+  is_deleted: boolean;                 
+
 }
 
 const EmployeeManagement : Model<IEmployeeManagement> = mongoose.model<IEmployeeManagement>('EmployeeManagement',EmployeeManagementSchema)

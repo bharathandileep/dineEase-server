@@ -10,6 +10,8 @@ export interface IFinancialReport extends Document {
   gst_number: mongoose.Types.ObjectId;      // Reference to License and Certificates schema
   created_at: Date;                         // Timestamp when the report was created
   updated_at: Date;                         // Timestamp when the report was last updated
+  is_deleted: boolean;                 
+
 }
 const FinancialReport : Model<IFinancialReport> = mongoose.model<IFinancialReport>('FinancialReport',FinancialReportSchema)
 export default FinancialReport;

@@ -10,6 +10,7 @@ export interface ISubscription extends Document {
   status: 'active' | 'expired' | 'inactive'; 
   created_at: Date;
   updated_at: Date;
+  is_deleted: boolean;                      
 }
 
 
@@ -28,7 +29,11 @@ export const SubscriptionSchema: Schema<ISubscription> = new Schema(
       enum: ['active', 'expired', 'inactive'], 
       default: 'inactive',
       required: true
-    }
+    },
+    is_deleted: { 
+      type: Boolean, 
+      default: false 
+    }, 
   },
   { timestamps: true }
 );

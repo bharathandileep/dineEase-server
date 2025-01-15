@@ -16,6 +16,7 @@ export interface IOrderManagement extends Document {
   created_at: Date;
   updated_at: Date;
   payment_id: mongoose.Types.ObjectId;     // Reference to Payment schema
+  is_deleted: boolean;
 }
   const OrderManagement : Model<IOrderManagement>=mongoose.model<IOrderManagement>('OrderManagement',OrderManagementSchema)
   export default OrderManagement;

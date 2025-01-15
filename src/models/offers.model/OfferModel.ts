@@ -13,6 +13,7 @@ export interface IOffer extends Document {
   status: boolean; // Active or inactive promotion
   created_at: Date;
   updated_at: Date;
+  //is_deleted: boolean;
 }
 
 

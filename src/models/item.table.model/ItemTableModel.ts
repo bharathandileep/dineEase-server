@@ -11,6 +11,8 @@ export interface IItem extends Document {
     item_price: number;         // Price of the item
     created_at: Date;           // Timestamp when the item was created
     updated_at: Date;           // Timestamp when the item was last updated
+    is_deleted: boolean;                 
+
   }
   const Item : Model<IItem> = mongoose.model<IItem>('Item',ItemSchema)
   export default Item;

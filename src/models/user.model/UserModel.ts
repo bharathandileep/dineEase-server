@@ -9,7 +9,8 @@ export interface IUser extends Document {
     phone_number: string;
     profile_photo?: string;
     is_deleted: boolean;
-    
+    date_of_birth: Date;
+    gender: 'Male' | 'Female' | 'Other';
     created_at: Date;
     updated_at: Date;
   }

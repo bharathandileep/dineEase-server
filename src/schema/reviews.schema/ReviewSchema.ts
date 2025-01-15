@@ -8,6 +8,7 @@ export interface IReview extends Document {
   review_text: string; 
   rating: number; 
   status: boolean; 
+  is_deleted: boolean;                     
   created_at: Date; 
   updated_at: Date; 
 }
@@ -30,6 +31,10 @@ export const ReviewSchema: Schema<IReview> = new Schema(
       enum: ['Kitchen', 'Item'], 
       required: true
     },
+    is_deleted: { 
+      type: Boolean, 
+      default: false 
+    }, 
     review_text: { type: String, required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     status: { type: Boolean, default: true }, 

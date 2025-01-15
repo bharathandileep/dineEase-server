@@ -7,6 +7,8 @@ export interface ICart extends Document {
   date_added: Date;                // Date and time when the item was added to the cart
   created_at: Date;                // Timestamp when the cart entry was created
   updated_at: Date;                // Timestamp when the cart entry was last updated
+  is_deleted: boolean;                 
+
 }
 const Cart : Model<ICart> = mongoose.model<ICart>('Cart',CartSchema)
 export default Cart;

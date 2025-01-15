@@ -7,8 +7,11 @@ export interface IFeedback extends Document {
   entity_type: 'Kitchen' | 'Organization'; 
   feedback_text: string; 
   rating: number; 
+  is_deleted: boolean;                 
+
   created_at: Date;
   updated_at: Date;
+  
 }
 
 
