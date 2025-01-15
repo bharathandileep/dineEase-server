@@ -3,12 +3,13 @@ import { PaymentSchema } from '../../schema/payment.schema/PaymentSchema';
 
 export interface IPayment extends Document {
   amount: number;
-  payment_method: string;  // E.g., 'Credit Card', 'Cash', 'Bank Transfer'
-  payment_date_time: Date; // The date and time when the payment was made
-  payment_status: string;  // E.g., 'Pending', 'Completed', 'Failed'
-  sent_by: string;         // Who initiated the payment (e.g., customer or kitchen)
-  received_by: string;     // Who received the payment (e.g., kitchen or delivery staff)
-  order_id: mongoose.Types.ObjectId; // Reference to the Order schema
+  payment_method: string;  
+  payment_date_time: Date; 
+  payment_status: string; 
+  sent_by: string;        
+  received_by: string;     
+  order_id: mongoose.Types.ObjectId; 
+  is_deleted: boolean;
   created_at: Date;
   updated_at: Date;
 }

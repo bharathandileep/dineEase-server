@@ -7,10 +7,13 @@ export interface ISubscription extends Document {
   description: string; 
   duration: number; 
   status: 'active' | 'expired' | 'inactive'; 
-  created_at: Date;
-  updated_at: Date;
+  created_at: Date; 
+  updated_at: Date; 
 }
 
 
 const Subscription: Model<ISubscription> = mongoose.model<ISubscription>('Subscription', SubscriptionSchema);
+
+
 export default Subscription;
+

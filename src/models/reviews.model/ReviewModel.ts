@@ -9,13 +9,17 @@ export interface IReview extends Document {
   review_text: string; 
   rating: number; 
   status: boolean; 
+  is_deleted: boolean;
+
   created_at: Date; 
   updated_at: Date; 
 }
 
 
 
-// Create and export the Review model
+
+
 const Review: Model<IReview> = mongoose.model<IReview>('Review', ReviewSchema);
+
 
 export default Review;

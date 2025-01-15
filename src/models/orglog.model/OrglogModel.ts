@@ -2,20 +2,20 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 import { OrganizationLogsSchema } from '../../schema/orglog.schema/OrglogSchema';
 
 export interface IOrganizationLogs extends Document {
-  organization_id: mongoose.Types.ObjectId;   // Reference to the Organization schema
-  login_method: string;                       // Login method (e.g., email, Google)
-  login_time: Date;                           // Timestamp of organization login
-  logout_time: Date;                          // Timestamp of organization logout
-  google_token: string;                       // Google token if applicable
-  ip_address: string;                         // IP address of the organization
-  device_information: string;                 // Information about the organization's device
-  location: string;                           // Location (e.g., city, country)
-  created_at: Date;                           // Timestamp when the log was created
-  updated_at: Date;                           // Timestamp when the log was last updated
+  organization_id: mongoose.Types.ObjectId;  
+  login_method: string;                       
+  login_time: Date;                           
+  logout_time: Date;                          
+  google_token: string;                       
+  ip_address: string;                        
+  device_information: string;                
+  location: string;                           
+  is_deleted: boolean;                       
+  created_at: Date;                          
+  updated_at: Date;                         
 }
-const OrganizationLogs: Model<IOrganizationLogs> = mongoose.model<IOrganizationLogs>(
-    'OrganizationLogs',
-    OrganizationLogsSchema
-  );
-  
-  export default OrganizationLogs;
+
+const OrganizationLogs: Model<IOrganizationLogs> = mongoose.model<IOrganizationLogs>('OrganizationLogs', OrganizationLogsSchema);
+
+
+export default OrganizationLogs;

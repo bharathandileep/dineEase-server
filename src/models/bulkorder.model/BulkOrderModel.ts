@@ -2,15 +2,15 @@ import mongoose, { Document, Model } from 'mongoose';
 import { BulkOrdersSchema } from '../../schema/bulkorder.schema/BulkOrder.schema';
 
 export interface IBulkOrders extends Document {
-  user_id: mongoose.Types.ObjectId;          // Reference to the User schema
-  kitchen_id: mongoose.Types.ObjectId;       // Reference to the Kitchen schema
-  item_id: mongoose.Types.ObjectId;          // Reference to the Item schema
-  order_date: Date;                          // Date of placing the order
-  delivery_date: Date;                       // Date of delivery
-  address_id: mongoose.Types.ObjectId;       // Reference to the Address schema
+  user_id: mongoose.Types.ObjectId;          
+  kitchen_id: mongoose.Types.ObjectId;       
+  item_id: mongoose.Types.ObjectId;         
+  order_date: Date;                          
+  delivery_date: Date;                       
+  address_id: mongoose.Types.ObjectId;       
   is_deleted: boolean;                 
-   created_at: Date;                          // Timestamp when the order was created
-  updated_at: Date;                          // Timestamp when the order was last updated
+   created_at: Date;                          
+  updated_at: Date;                          
 }
 
 const BulkOrders : Model<IBulkOrders> = mongoose.model<IBulkOrders>('BulkOrders',BulkOrdersSchema)

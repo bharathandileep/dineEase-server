@@ -1,34 +1,23 @@
-// import mongoose, { Document, Model } from 'mongoose';
-// import { LocationSchema } from '../../schema/Location.schema/Location.schema';
 
-// export interface ILocation extends Document {
-//   kitchen_id: mongoose.Types.ObjectId;      // Reference to the Kitchen schema
-//   address_id: mongoose.Types.ObjectId;      // Reference to the Address schema
-//   delivery_area: string;                    // Delivery area description
-//   created_at: Date;                         // Timestamp when the location was created
-//   updated_at: Date;                         // Timestamp when the location was last updated
-// }
-// const Location : Model<ILocation> = mongoose.model<ILocation>('Location',LocationSchema)
-// export default Location;
 
 import mongoose, { Document, Model } from 'mongoose';
 import { LocationSchema } from '../../schema/Location.schema/Location.schema';
 
 export interface ILocation extends Document {
-  kitchen_id: mongoose.Types.ObjectId;         // Reference to the Kitchen schema
-  address_id: mongoose.Types.ObjectId;         // Reference to the Address schema
-  organization_id: mongoose.Types.ObjectId;    // Reference to the Organization schema
-  geopolitical_area: string;                   // Geopolitical area description
+  kitchen_id: mongoose.Types.ObjectId;         
+  address_id: mongoose.Types.ObjectId;         
+  organization_id: mongoose.Types.ObjectId;    
+  geopolitical_area: string;                  
   location: { 
     latitude: number; 
     longitude: number; 
-  };                                            // Geographic location
-  delivery_area: string;                        // Delivery area description
-  is_deleted: boolean;                          // Soft delete flag
-  created_at: Date;                             // Timestamp when the location was created
-  updated_at: Date;                             // Timestamp when the location was last updated
+  };                                           
+  delivery_area: string;                        
+  is_deleted: boolean;                          
+  created_at: Date;                             
+  updated_at: Date;                             
 }
 
-// Define the Location model
+
 const Location: Model<ILocation> = mongoose.model<ILocation>('Location', LocationSchema);
 export default Location;

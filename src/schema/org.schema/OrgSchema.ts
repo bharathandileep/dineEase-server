@@ -18,7 +18,6 @@ export interface IOrganization extends Document {
   updated_at: Date;                         
 }
 
-
 export const OrganizationSchema: Schema<IOrganization> = new Schema<IOrganization>(
   {
     user_id: {

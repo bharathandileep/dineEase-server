@@ -20,7 +20,7 @@ export interface IEmployeeManagement extends Document {
   updated_at: Date;                           
 }
 
-// Define the Employee Management schema
+
 export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
   {
     kitchen_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Kitchen', required: true }, 

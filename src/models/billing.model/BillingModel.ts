@@ -2,11 +2,11 @@ import mongoose, { Document, Model } from 'mongoose';
 import { BillingSchema } from '../../schema/billing.schema/Billing.schema';
 
 export interface IBilling extends Document {
-  order_id: mongoose.Types.ObjectId;   // Reference to the Order schema
+  order_id: mongoose.Types.ObjectId;   
   billing_date: Date;  
   is_deleted: boolean;                  
-   created_at: Date;                     // Timestamp when the billing was created
-  updated_at: Date;                     // Timestamp when the billing was last updated
+   created_at: Date;                     
+  updated_at: Date;                     
 }
  const Billing : Model<IBilling> = mongoose.model<IBilling>('Billing',BillingSchema)
  export default Billing;

@@ -34,21 +34,21 @@ export interface IKitchen extends Document {
   kitchen_owner_name: string;
   owner_email: string;
   owner_phone_number: string;
-  restaurant_type: string;             // Restaurant type (e.g., 'Fine Dining', 'Cafe')
-  kitchen_type: string;                // Veg or Non-Veg
-  kitchen_phone_number: string;        // Additional kitchen phone number
-  kitchen_document_verification: boolean; // Whether documents are verified
-  opens_at: string;                    // Time in string format (e.g., '09:00 AM')
-  closes_at: string;                   // Time in string format (e.g., '09:00 PM')
-  working_days: string[];              // Array of working days (e.g., ['Monday', 'Tuesday'])
-  kitchen_image: string;               // URL or file path to the kitchen image
-  gst_number: string;                  // GST number for the kitchen
+  restaurant_type: string;             
+  kitchen_type: string;                
+  kitchen_phone_number: string;       
+  kitchen_document_verification: boolean; 
+  opens_at: string;                    
+  closes_at: string;                  
+  working_days: string[];             
+  kitchen_image: string;               
+  gst_number: string;                 
   created_at: Date;
   updated_at: Date;
   is_deleted: boolean;                 
 
 }
 
-// Define the Kitchen model
+
 const Kitchen: Model<IKitchen> = mongoose.model<IKitchen>('Kitchen', KitchenSchema);
 export default Kitchen;

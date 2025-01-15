@@ -1,3 +1,5 @@
+
+
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 
@@ -8,7 +10,8 @@ export interface IReview extends Document {
   review_text: string; 
   rating: number; 
   status: boolean; 
-  is_deleted: boolean;                     
+  is_deleted: boolean;
+
   created_at: Date; 
   updated_at: Date; 
 }
@@ -16,30 +19,42 @@ export interface IReview extends Document {
 
 export const ReviewSchema: Schema<IReview> = new Schema(
   {
-    user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
+    user_id: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User', 
+      required: true 
     },
-    entity_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      refPath: 'entity_type' 
+    entity_id: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      required: true 
     },
     entity_type: {
       type: String,
       enum: ['Kitchen', 'Item'], 
       required: true
     },
+    review_text: { 
+      type: String, 
+      required: true 
+    },
+    rating: { 
+      type: Number, 
+      required: true, 
+      min: 1, 
+      max: 5 
+    },
+    status: { 
+      type: Boolean, 
+      default: true 
+    },
     is_deleted: { 
       type: Boolean, 
       default: false 
     }, 
-    review_text: { type: String, required: true },
-    rating: { type: Number, required: true, min: 1, max: 5 },
-    status: { type: Boolean, default: true }, 
   },
-  { timestamps: true }
+  { timestamps: true } 
 );
+
+
 
 

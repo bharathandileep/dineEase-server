@@ -58,6 +58,4 @@ export const LocationSchema: Schema = new Schema<ILocation>(
 );
 
 
-const Location = mongoose.model<ILocation>('Location', LocationSchema);
-export default Location;
 

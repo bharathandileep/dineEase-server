@@ -1,17 +1,18 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import { PromotionSchema} from '../../schema/promotion.schema/PromotionSchema';
 
-// Define the interface for the Promotion document
+
 export interface IPromotion extends Document {
-  kitchen_id: mongoose.Types.ObjectId; // Reference to the Kitchen model
+  kitchen_id: mongoose.Types.ObjectId; 
   name: string;
   banner:string;
   description: string;
-  discount_percentage: number; // Discount percentage (e.g., 20%)
-  discount_amount: number; // Optional: Discount in amount (e.g., $10 off)
-  start_date: Date; // Promotion start date
-  end_date: Date; // Promotion end date
-  status: boolean; // Active or inactive promotion
+  discount_percentage: number; 
+  discount_amount: number; 
+  start_date: Date; 
+  end_date: Date;
+  is_deleted: boolean;
+  status: boolean; 
   created_at: Date;
   updated_at: Date;
 }
