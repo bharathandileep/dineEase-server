@@ -1,31 +1,31 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
  
-// Define the Message interface (sub-document for individual messages)
+
 export interface IMessage extends Document {
-  sender_id: mongoose.Types.ObjectId; // User or Support Agent
-  message_text: string;                // The message content
-  sent_at: Date;                       // Timestamp when the message was sent
-  message_type: 'text' | 'image' | 'file'; // Type of the message (e.g., text, image)
+  sender_id: mongoose.Types.ObjectId; 
+  message_text: string;              
+  sent_at: Date;                     
+  message_type: 'text' | 'image' | 'file'; 
 }
  
-// Define the Chat schema interface
+
 export interface IChat extends Document {
-  user_id: mongoose.Types.ObjectId;       // Reference to the User
-  support_agent_id: mongoose.Types.ObjectId; // Reference to the Support Agent
-  messages: IMessage[];                    // Array of messages exchanged
-  status: 'open' | 'closed' | 'in-progress'; // Current status of the chat
-  created_at: Date;                        // Timestamp when the chat started
-  updated_at: Date;                        // Timestamp when the chat was last updated
-  last_message_timestamp: Date;            // Timestamp of the last message sent
-  resolved_by?: mongoose.Types.ObjectId;  // Support agent who resolved the issue (optional)
+  user_id: mongoose.Types.ObjectId;       
+  support_agent_id: mongoose.Types.ObjectId; 
+  messages: IMessage[];                  
+  status: 'open' | 'closed' | 'in-progress'; 
+  created_at: Date;                        
+  updated_at: Date;                        
+  last_message_timestamp: Date;           
+  resolved_by?: mongoose.Types.ObjectId;  
 }
  
-// Define the Message sub-schema for individual messages
+
 export const MessageSchema: Schema<IMessage> = new Schema(
   {
     sender_id: {
       type: mongoose.Schema.Types.ObjectId,
-      refPath: 'sender_type',  // Reference to either User or SupportAgent
+      refPath: 'sender_type', 
       required: true,
     },
     message_text: { type: String, required: true },
@@ -39,20 +39,20 @@ export const MessageSchema: Schema<IMessage> = new Schema(
   { timestamps: true }
 );
  
-// Define the Chat schema
+
 export const ChatSchema: Schema<IChat> = new Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the User model
+      ref: 'User', 
       required: true,
     },
     support_agent_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'SupportAgent', // Reference to the Support Agent model
+      ref: 'SupportAgent',
       required: true,
     },
-    messages: [MessageSchema], // Store messages in an array
+    messages: [MessageSchema],
     status: {
       type: String,
       enum: ['open', 'closed', 'in-progress'],
@@ -63,7 +63,7 @@ export const ChatSchema: Schema<IChat> = new Schema(
     last_message_timestamp: { type: Date, default: Date.now },
     resolved_by: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'SupportAgent', // Reference to the Support Agent model
+      ref: 'SupportAgent', 
       required: false,
     },
   },
