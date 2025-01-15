@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from 'mongoose';
-import { BillingSchema } from '../../schema/billing.schema/Billing.schema';
+import { BillingSchema } from '../../schema/billing/Billing.schema';
 
 export interface IBilling extends Document {
   order_id: mongoose.Types.ObjectId;   

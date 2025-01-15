@@ -1,5 +1,5 @@
 import mongoose, { Document, Model } from 'mongoose';
-import { AddressSchema } from '../../schema/address.schema/AddressSchema';
+import { AddressSchema } from '../../schema/address/AddressSchema';
 
 export interface IAddress extends Document {
   user_id: mongoose.Types.ObjectId;       
