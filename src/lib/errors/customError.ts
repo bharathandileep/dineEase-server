@@ -1,11 +1,18 @@
 export class CustomError extends Error {
-  public statusCode: number;
-  public status: boolean;
+  statusCode: number;
+  status: boolean;
+  errorType: string;
 
-  constructor(message: string, statusCode: number, status: boolean = false) {
-    super(message); // Call the parent class constructor with the message
+  constructor(
+    message: string,
+    statusCode: number,
+    errorType: string = "Error",
+    status: boolean = false
+  ) {
+    super(message);
     this.statusCode = statusCode;
     this.status = status;
+    this.errorType = errorType;
 
     // Ensure the prototype chain is properly set
     Object.setPrototypeOf(this, CustomError.prototype);
