@@ -3,8 +3,8 @@ import { port } from "./environment";
 export const apiConfig = {
   baseAPIUrl: `/api/v1`,
   auth: {
-    loginGoogle: "/login-google",
-    register: "/register",
+    google: "/google-auth",
+    sendOtp: "/send-otp",
     logout: "/logout",
   },
   users: {
