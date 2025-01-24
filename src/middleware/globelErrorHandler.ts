@@ -1,9 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { errorBody } from "../lib/interfaces/errorbody.interface";
-import { node_env } from "../lib/constants";
+import { node_env } from "../config/environment";
 
 export const errorHandler = (
-  error: Error & { statusCode?: number; status?: string },
+  error: Error & {
+    statusCode?: number;
+    status?: string;
+    errorType: string;
+    timestamp: string;
+  },
   req: Request,
   res: Response,
   next: NextFunction
@@ -12,6 +17,8 @@ export const errorHandler = (
     statusCode: error.statusCode || 500,
     message: error.message || "Internal Server Error",
     status: typeof error.status === "boolean" ? error.status : false,
+    errorType: error.errorType,
+    timestamp: new Date().toISOString(),
   };
   if (node_env == "DEVELOPMENT") {
     errorBody.stack = error.stack;
