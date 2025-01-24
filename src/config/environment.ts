@@ -8,10 +8,10 @@ export const MONGO_DB_USERNAME: string | undefined =
   process.env.MONGO_DB_USERNAME;
 export const MONGO_DB_PASSWORD: string | undefined =
   process.env.MONGO_DB_PASSWORD;
-export const mongoURI = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@dineas-cluster-01.oag08.mongodb.net/`;
+export const mongoURI = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@dineas-cluster-01.oag08.mongodb.net`;
 
 export const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-export const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+export const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;            
 
 export const accessTokenExpiration = "15m";
 export const refreshTokenExpiration = "7d";

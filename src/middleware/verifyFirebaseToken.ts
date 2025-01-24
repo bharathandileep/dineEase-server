@@ -15,7 +15,7 @@ export const verifyFirebaseToken = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const token = req.headers.authorization?.split("Bearer ")[1];
+    const token = req.headers.google_authorization?.split("Bearer ")[1];
     if (!token) {
       throw new CustomError(
         "Authorization token not provided",

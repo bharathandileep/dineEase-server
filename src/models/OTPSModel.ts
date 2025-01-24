@@ -8,13 +8,16 @@ export interface IOtp extends Document {
   attempts: number;
 }
 
-const otpSchema: Schema<IOtp> = new Schema<IOtp>({
-  email: { type: String, required: true, unique: true },
-  fullName: { type: String, required: true},
-  otp: { type: String, required: true },
-  expiresAt: { type: Date, required: true },
-  attempts: { type: Number, default: 0 },
-});
+const otpSchema: Schema<IOtp> = new Schema<IOtp>(
+  {
+    email: { type: String, unique: true },
+    fullName: { type: String, required: true },
+    otp: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+    attempts: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
 
 const Otp: Model<IOtp> = mongoose.model<IOtp>("Otp", otpSchema);
 
