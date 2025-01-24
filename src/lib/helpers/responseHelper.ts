@@ -1,6 +1,7 @@
-// responseHelper.ts
+
 import { Response } from "express";
 import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
+import { ERROR_TYPES } from "../constants/errorType";
 
 export const sendSuccessResponse = (
   res: Response,
@@ -20,9 +21,9 @@ export const sendSuccessResponse = (
 // Error Response
 export const sendErrorResponse = (
   res: Response,
-  error: Error,
+  error: any,
   statusCode: number = HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-  errorType: string = "ServerError",
+  errorType: string = ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE,
   details: string = ""
 ) => {
   return res.status(statusCode).json({
