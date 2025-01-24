@@ -1,4 +1,4 @@
-import Otp from "../../models/OTPSModel";
+import Otp from "../../models/users/OTPSModel";
 import { ERROR_TYPES } from "../constants/errorType";
 import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
 import { CustomError } from "../errors/customError";
