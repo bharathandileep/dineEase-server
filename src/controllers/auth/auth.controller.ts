@@ -6,18 +6,18 @@ import {
 } from "../../lib/helpers/responseHelper";
 import { HTTP_STATUS_CODE } from "../../lib/constants/httpStatusCodes";
 import { ERROR_TYPES } from "../../lib/constants/errorType";
-import User from "../../models/UserModel";
 import { generateOtp } from "../../lib/helpers/generateOtp";
-import Otp from "../../models/OTPSModel";
+import Otp from "../../models/users/OTPSModel";
 import { generateAndEmailOtp } from "../../lib/utils/generateAndEmailOtp";
 import { validateOtp } from "../../lib/utils/otpValidator";
 import { hashPassword } from "../../lib/helpers/generatePasswordHash";
+import User from "../../models/users/UserModel";
 
 export const handleGoogleAuth = async (
   req: Request,
   res: Response
 ): Promise<any> => {
-  try {
+  try { 
     const { email, name, picture } = req.body.user;
     let user = await User.findOne({ email });
     if (user) {

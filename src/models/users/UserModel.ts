@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { CommonDBInterface } from "../lib/interfaces/DBinterfaces";
+import { CommonDBInterface } from "../../lib/interfaces/DBinterfaces";
 
 export interface IUser extends Document, CommonDBInterface {
   fullName: string;
