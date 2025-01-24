@@ -1,6 +1,9 @@
 # Node modules
 /node_modules/
 
+#firebase
+src/config/FirebaseServiceAccount.json
+
 # Logs
 logs
 *.log
