@@ -1,25 +1,23 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import { CommonDBInterface } from "../../lib/interfaces/DBinterfaces";
 
 export interface IUser extends Document, CommonDBInterface {
-  full_name: string;
-  username: string;
+  fullName: string;
+  userName: string;
   email: string;
   phone_number: string;
   profile_photo?: string;
-  date_of_birth: Date;
-  gender: "Male" | "Female" | "Other";
+  is_email_verified: boolean;
 }
+
 export const UserSchema: Schema = new Schema<IUser>(
   {
-    full_name: { type: String, required: true },
-    username: { type: String, unique: true, required: true },
-    email: { type: String, unique: true, required: true },
-    phone_number: { type: String, unique: true, required: true },
+    fullName: { type: String, required: true },
+    email: { type: String, unique: true },
+    phone_number: { type: String, unique: true },
     profile_photo: { type: String, default: null },
     is_deleted: { type: Boolean, default: false },
-    date_of_birth: { type: Date, required: true },
-    gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
+    is_email_verified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

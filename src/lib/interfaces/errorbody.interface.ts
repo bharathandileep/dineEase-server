@@ -3,4 +3,6 @@ export interface errorBody {
   statusCode: number;
   status: boolean;
   stack?: string;
+  errorType: string;
+  timestamp: string;
 }

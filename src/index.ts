@@ -1,16 +1,9 @@
-import Express, { Application, Request, Response } from "express";
-import { CustomError } from "./lib/errors/customError";
-import { port } from "./lib/constants";
-import { errorHandler } from "./middleware/GlobelErrorHandler";
+import { app } from "./app";
+import { port } from "./config/environment";
+import { connectToMongoDB } from "./db/connectMongoDb";
 
-
-const app: Application = Express();
-
-app.get("/", (req: Request, res: Response) => {
-  throw new CustomError("bad request", 400, false);
-});
-
-app.use("*", errorHandler);
-app.listen(port, () => {
-  console.log("server running");
+connectToMongoDB().then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
 });
