@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express from "express";
 import { apiConfig } from "../../config/endpoint ";
 import { verifyFirebaseToken } from "../../middleware/verifyFirebaseToken";
 import {
