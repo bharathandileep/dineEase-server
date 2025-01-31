@@ -42,7 +42,7 @@ export const KitchenGstCertificateDetailsSchema: Schema = new Schema<IKitchenGst
   { timestamps: true } 
 );
 
-
+ 
 
 const KitchenGstCertificateDetails: Model<IKitchenGstCertificateDetails> = mongoose.model<IKitchenGstCertificateDetails>(
   'KitchenGstCertificateDetails', 

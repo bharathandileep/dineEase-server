@@ -16,45 +16,55 @@ export interface IKitchen extends Document, CommonDBInterface {
   closes_at: string;
   working_days: string[];
   kitchen_image: string;
-  gst_number: string;
+  pre_ordering_options: string[];
 }
 
-export const KitchenSchema: Schema = new Schema<IKitchen>(
-  {
-    kitchen_name: { type: String, required: true },
-    address_id: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Address",
-        required: true,
-      }
-    ],
-    kitchen_status: { type: String, required: true },
-    kitchen_owner_name: { type: String, required: true },
-    owner_email: { type: String, required: true },
-    owner_phone_number: { type: String, required: true },
-    restaurant_type: { type: String, required: true },
-    kitchen_type: {
-      type: String,
+export const KitchenSchema: Schema = new Schema<IKitchen>({
+  kitchen_name: { type: String, required: true },
+  address_id: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
       required: true,
-      enum: ["Veg", "Non-Veg"],
     },
-    kitchen_phone_number: { type: String, required: true },
-    kitchen_document_verification: {
-      type: Boolean,
-      default: false,
-    },
-    is_deleted: {
-      type: Boolean,
-      default: false,
-    },
-    opens_at: { type: String, required: true },
-    closes_at: { type: String, required: true },  
-    working_days: { type: [String], required: true },
-    kitchen_image: { type: String, required: true },
+  ],
+  kitchen_status: { type: String, required: true },
+  kitchen_owner_name: { type: String, required: true },
+  owner_email: { type: String, required: true },
+  owner_phone_number: { type: String, required: true },
+  restaurant_type: { type: String, required: true },
+  kitchen_type: {
+    type: String,
+    required: true,
+    enum: ["Veg", "Non-Veg"],
   },
-  { timestamps: true }
-);
+  kitchen_phone_number: { type: String, required: true },
+  kitchen_document_verification: {
+    type: Boolean,
+    default: false,
+  },
+  is_deleted: {
+    type: Boolean,
+    default: false,
+  },
+  kitchen_image: { type: String, required: true },
+  working_days: [
+    {
+      day: { type: String, required: true },
+      is_open: { type: Boolean, required: true, default: false },
+      open_time: { type: String },
+      close_time: { type: String },
+    },
+  ],
+  pre_ordering_options: [
+    {
+      meal_type: { type: String, required: true },
+      pre_order_start_time: { type: String, required: true },
+      pre_order_close_time: { type: String, required: true },
+      delivery_time: { type: String, required: true },
+    },
+  ],
+});
 
 const Kitchen: Model<IKitchen> = mongoose.model<IKitchen>(
   "Kitchen",

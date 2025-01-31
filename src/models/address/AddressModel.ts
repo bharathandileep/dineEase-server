@@ -21,11 +21,7 @@ export const AddressSchema: Schema<IAddress> = new Schema<IAddress>(
     pincode: { type: String, required: true },
     country: { type: String, required: true },
     landmark: { type: String, default: null },
-    address_type: {
-      type: String,
-      required: true,
-      enum: ["Home", "Work"],
-    },
+    address_type: { type: String },
     is_deleted: {
       type: Boolean,
       default: false,

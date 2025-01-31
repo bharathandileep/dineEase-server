@@ -24,7 +24,7 @@ app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {
 });
 
 // 404 Error handler for all non-existing routes
-app.use("*", (req, res, next) => {
+app.use("*", (req, res, next) => {          
   throw new CustomError(
     `The page ${req.originalUrl} you requested does not exist.`,
     HTTP_STATUS_CODE.NOT_FOUND,

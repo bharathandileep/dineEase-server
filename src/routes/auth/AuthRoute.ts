@@ -7,7 +7,7 @@ import {
   generateRegistrationOtp,
   generateLoginOtp,
   handleLoginOtpVerification,
-} from "../../controllers/auth/auth.controller";
+} from "../../controllers/auth/authController";
 import { otpRateLimiter } from "../../middleware/rateLimiter";
 
 const router = express.Router();

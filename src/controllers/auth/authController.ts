@@ -197,6 +197,6 @@ export const handleLoginOtpVerification = async (
 
 export const handlePhoneRegistration = (req: Request, res: Response) => {};
 
-//note to change
+// note to change
 // make a single function that can generate and send otp
 // make sure that db error not to the client (validate fields before db)
