@@ -4,13 +4,22 @@ import { verifyFirebaseToken } from "../../middleware/verifyFirebaseToken";
 import {
   handleAuthenticateOtp,
   handleGoogleAuth,
-  handleOtpGeneration,
+  generateRegistrationOtp,
+  generateLoginOtp,
+  handleLoginOtpVerification,
 } from "../../controllers/auth/auth.controller";
+import { otpRateLimiter } from "../../middleware/rateLimiter";
 
 const router = express.Router();
 
 router.post(`${apiConfig.auth.google}`, verifyFirebaseToken, handleGoogleAuth);
-router.post(`${apiConfig.auth.sendOtp}`, handleOtpGeneration);
+router.post(
+  `${apiConfig.auth.sendOtp}`,
+  otpRateLimiter,
+  generateRegistrationOtp
+);
+router.post(`${apiConfig.auth.loginOtp}`, generateLoginOtp);
 router.post(`${apiConfig.auth.verifyOtp}`, handleAuthenticateOtp);
+router.post(`${apiConfig.auth.verifyLoginOtp}`, handleLoginOtpVerification);
 
 export default router;

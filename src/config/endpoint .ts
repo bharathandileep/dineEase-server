@@ -5,7 +5,9 @@ export const apiConfig = {
   auth: {
     google: "/google-auth",
     sendOtp: "/send-otp",
+    loginOtp: "/login-Otp",
     verifyOtp: "/verify-otp",
+    verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
   },
   users: {

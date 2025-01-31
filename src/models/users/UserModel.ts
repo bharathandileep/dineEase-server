@@ -13,8 +13,8 @@ export interface IUser extends Document, CommonDBInterface {
 export const UserSchema: Schema = new Schema<IUser>(
   {
     fullName: { type: String, required: true },
-    email: { type: String, unique: true },
-    phone_number: { type: String, unique: true },
+    email: { type: String, unique: true, sparse: true },
+    phone_number: { type: String, unique: true, sparse: true },
     profile_photo: { type: String, default: null },
     is_deleted: { type: Boolean, default: false },
     is_email_verified: { type: Boolean, default: false },

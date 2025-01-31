@@ -1,33 +1,19 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
-import { CommonDBInterface } from '../../lib/interfaces/DBinterfaces';
+import mongoose, { Document, Model, Schema } from "mongoose";
+import { CommonDBInterface } from "../../lib/interfaces/DBinterfaces";
 
-
-export interface IAddress extends Document,CommonDBInterface {
-  reference_id: mongoose.Types.ObjectId; 
-  reference_name: 'User' | 'Organization' | 'Kitchen'; 
-  street_address: string;                
-  city: string;                          
-  state: string;                         
-  district: string;                      
-  pincode: string;                       
-  country: string;                       
-  landmark?: string;                     
-  address_type: 'Home' | 'Work';         
-                  
+export interface IAddress extends Document, CommonDBInterface {
+  street_address: string;
+  city: string;
+  state: string;
+  district: string;
+  pincode: string;
+  country: string;
+  landmark?: string;
+  address_type: "Home" | "Work";
 }
-
 
 export const AddressSchema: Schema<IAddress> = new Schema<IAddress>(
   {
-    reference_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true, 
-    },
-    reference_name: {
-      type: String,
-      required: true,
-      enum: ['User', 'Organization', 'Kitchen'], 
-    },
     street_address: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },
@@ -38,7 +24,7 @@ export const AddressSchema: Schema<IAddress> = new Schema<IAddress>(
     address_type: {
       type: String,
       required: true,
-      enum: ['Home', 'Work'],
+      enum: ["Home", "Work"],
     },
     is_deleted: {
       type: Boolean,
@@ -48,6 +34,8 @@ export const AddressSchema: Schema<IAddress> = new Schema<IAddress>(
   { timestamps: true }
 );
 
-
-const Address: Model<IAddress> = mongoose.model<IAddress>('Address', AddressSchema);
+const Address: Model<IAddress> = mongoose.model<IAddress>(
+  "Address",
+  AddressSchema
+);
 export default Address;
