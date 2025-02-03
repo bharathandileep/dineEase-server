@@ -1,14 +1,14 @@
 import express, { Application } from "express";
-import { apiConfig } from "../../config/endpoint ";
-import { verifyFirebaseToken } from "../../middleware/verifyFirebaseToken";
+import { apiConfig } from "../config/endpoint ";
+import { verifyFirebaseToken } from "../middleware/verifyFirebaseToken";
 import {
   handleAuthenticateOtp,
   handleGoogleAuth,
   generateRegistrationOtp,
   generateLoginOtp,
   handleLoginOtpVerification,
-} from "../../controllers/auth/authController";
-import { otpRateLimiter } from "../../middleware/rateLimiter";
+} from "../controllers/auth/authController";
+import { otpRateLimiter } from "../middleware/rateLimiter";
 
 const router = express.Router();
 

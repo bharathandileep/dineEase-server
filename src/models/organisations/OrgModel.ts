@@ -1,15 +1,18 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { CommonDBInterface } from "../../lib/interfaces/DBinterfaces";
+import { string } from "joi";
 
 export interface IOrganization extends Document, CommonDBInterface {
   user_id: mongoose.Types.ObjectId;
   address_id: mongoose.Types.ObjectId;
-  name: string;
+  organizationName: string;
+  managerName: string;
   register_number: string;
   location: string;
   contact_number: string;
   email: string;
   no_of_employees: number;
+  organizationLogo: string;
 }
 
 export const OrganizationSchema: Schema<IOrganization> =
@@ -27,18 +30,20 @@ export const OrganizationSchema: Schema<IOrganization> =
           required: true,
         },
       ],
-      name: {
+      organizationName: {
         type: String,
         required: true,
+      },
+      organizationLogo: {
+        type: String,
+      },
+      managerName: {
+        type: String,
       },
       register_number: {
         type: String,
         required: true,
         unique: true,
-      },
-      location: {
-        type: String,
-        required: true,
       },
       contact_number: {
         type: String,

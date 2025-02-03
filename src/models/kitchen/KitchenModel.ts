@@ -17,10 +17,16 @@ export interface IKitchen extends Document, CommonDBInterface {
   working_days: string[];
   kitchen_image: string;
   pre_ordering_options: string[];
+  user_id: mongoose.Types.ObjectId;
 }
 
 export const KitchenSchema: Schema = new Schema<IKitchen>({
   kitchen_name: { type: String, required: true },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   address_id: [
     {
       type: mongoose.Schema.Types.ObjectId,

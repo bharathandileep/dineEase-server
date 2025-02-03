@@ -47,11 +47,8 @@ export const KitchenFssaiCertificateDetailsSchema: Schema = new Schema<IKitchenF
   { timestamps: true } 
 );
 
-
-
-
-const KitchenFssaiCertificateDetails: Model<IKitchenFssaiCertificateDetails> = mongoose.model<IKitchenFssaiCertificateDetails>(
+const FssaiCertificateDetails: Model<IKitchenFssaiCertificateDetails> = mongoose.model<IKitchenFssaiCertificateDetails>(
   'KitchenFssaicertificateDetails', 
   KitchenFssaiCertificateDetailsSchema
 );
-export default KitchenFssaiCertificateDetails;
+export default FssaiCertificateDetails;

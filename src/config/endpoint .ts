@@ -15,4 +15,18 @@ export const apiConfig = {
     createUser: "/users",
     updateUser: "/users/:id",
   },
+  kitchens: {
+    newkitchens: "/new",
+    updatekitchens: "/update/:id",
+    deletekitchens: "/delete/:kitchenId",
+    getAllkitchens: "/all",
+    getkitchensById: "/:kitchenId",
+  },
+  organization: {
+    newOrganization: "/new",
+    updateOrganization: "/update/:id",
+    deleteOrganization: "/delete/:kitchenId",
+    getAllOrganization: "/all",
+    getOrganizationById: "/:orgId",
+  },
 };
