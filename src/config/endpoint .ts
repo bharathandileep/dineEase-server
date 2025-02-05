@@ -9,10 +9,12 @@ export const apiConfig = {
     verifyOtp: "/verify-otp",
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
+    adminLogin:"/admin/login",
+    adminRegister:"/admin/register"
   },
   users: {
     getUser: "/users/:id",
-    createUser: "/users",
+    createUser: "/users", 
     updateUser: "/users/:id",
   },
   kitchens: {

@@ -9,7 +9,7 @@ export interface IKitchen extends Document, CommonDBInterface {
   owner_email: string;
   owner_phone_number: string;
   restaurant_type: string;
-  kitchen_type: "Veg" | "Non-Veg";
+  kitchen_type: "Veg" | "Non-Veg" | "Both";
   kitchen_phone_number: string;
   kitchen_document_verification: boolean;
   opens_at: string;
@@ -42,7 +42,7 @@ export const KitchenSchema: Schema = new Schema<IKitchen>({
   kitchen_type: {
     type: String,
     required: true,
-    enum: ["Veg", "Non-Veg"],
+    enum: ["Veg", "Non-Veg","Both"],
   },
   kitchen_phone_number: { type: String, required: true },
   kitchen_document_verification: {

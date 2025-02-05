@@ -9,7 +9,12 @@ import { ERROR_TYPES } from "../../lib/constants/errorType";
 import { generateAndEmailOtp } from "../../lib/utils/generateAndEmailOtp";
 import { validateOtp } from "../../lib/utils/otpValidator";
 import User from "../../models/users/UserModel";
-import { handleTokens } from "../../lib/utils/attachAuthToken";
+import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
+import { generateJWTToken } from "../../lib/helpers/generateJWTToken";
+import {
+  accessTokenExpiration,
+  accessTokenSecret,
+} from "../../config/environment";
 
 export const handleGoogleAuth = async (
   req: Request,
@@ -31,12 +36,17 @@ export const handleGoogleAuth = async (
       fullName: user.fullName,
       profileImg: user.profile_photo,
     };
-    handleTokens(res, payload);
+    appendRefreshTokenCookies(res, payload);
+    const accessToken = generateJWTToken(
+      accessTokenSecret,
+      payload,
+      accessTokenExpiration
+    );
     const message = user.isNew
       ? "Welcome! Your account has been created successfully."
       : "User logged in successfully.";
 
-    return sendSuccessResponse(res, message, null, HTTP_STATUS_CODE.OK);
+    return sendSuccessResponse(res, message, accessToken, HTTP_STATUS_CODE.OK);
   } catch (error) {
     sendErrorResponse(
       res,

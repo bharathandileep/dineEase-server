@@ -9,6 +9,7 @@ import {
   handleLoginOtpVerification,
 } from "../controllers/auth/authController";
 import { otpRateLimiter } from "../middleware/rateLimiter";
+import { handleAdminLogin, handleRegisterAdmin } from "../controllers/auth/adminController";
 
 const router = express.Router();
 
@@ -21,5 +22,7 @@ router.post(
 router.post(`${apiConfig.auth.loginOtp}`, generateLoginOtp);
 router.post(`${apiConfig.auth.verifyOtp}`, handleAuthenticateOtp);
 router.post(`${apiConfig.auth.verifyLoginOtp}`, handleLoginOtpVerification);
-
+router.post(`${apiConfig.auth.adminRegister}`, handleRegisterAdmin);
+router.post(`${apiConfig.auth.adminLogin}`, handleAdminLogin);
 export default router;
+ 
