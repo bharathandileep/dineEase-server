@@ -1,38 +1,35 @@
+import mongoose, { Schema, Document } from 'mongoose';
 
-
-import mongoose, { Document, Model, Schema } from 'mongoose';
-import { CommonDBInterface } from '../../lib/interfaces/DBinterfaces';
-
-
-export interface ILocation extends Document,CommonDBInterface{
-  kitchen_id: mongoose.Types.ObjectId;         
-  address_id: mongoose.Types.ObjectId;         
-  organization_id: mongoose.Types.ObjectId;    
-  geopolitical_area: string;                  
-  location: { 
-    latitude: number; 
-    longitude: number; 
-  };                                           
-  delivery_area: string;                        
-                      
+export interface ILocation extends Document {
+  prepared_by_id: mongoose.Types.ObjectId;
+  entity_type: 'Kitchen' | 'Organization' | 'User';
+  address_id: mongoose.Types.ObjectId;
+  geopolitical_area: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  delivery_area: string;
+  is_deleted: boolean;
 }
+
 export const LocationSchema: Schema = new Schema<ILocation>(
   {
-    kitchen_id: { 
+    prepared_by_id: { 
       type: mongoose.Schema.Types.ObjectId, 
-      ref: 'Kitchen', 
-      required: true 
+      required: true, 
+      refPath: 'entity_type' 
+    }, 
+    entity_type: { 
+      type: String, 
+      required: true, 
+      enum: ['Kitchen', 'Organization', 'User'] 
     }, 
     address_id: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'Address', 
       required: true 
     },
-    organization_id: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: 'Organization', 
-      required: true 
-    }, 
     geopolitical_area: { 
       type: String, 
       required: true 
@@ -50,10 +47,7 @@ export const LocationSchema: Schema = new Schema<ILocation>(
       default: false 
     }, 
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
-
-
-const Location: Model<ILocation> = mongoose.model<ILocation>('Location', LocationSchema);
-export default Location;
+export const Location = mongoose.model<ILocation>('Location', LocationSchema);

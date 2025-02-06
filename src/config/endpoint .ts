@@ -5,12 +5,30 @@ export const apiConfig = {
   auth: {
     google: "/google-auth",
     sendOtp: "/send-otp",
+    loginOtp: "/login-Otp",
     verifyOtp: "/verify-otp",
+    verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
+    adminLogin:"/admin/login",
+    adminRegister:"/admin/register"
   },
   users: {
     getUser: "/users/:id",
-    createUser: "/users",
+    createUser: "/users", 
     updateUser: "/users/:id",
+  },
+  kitchens: {
+    newkitchens: "/new",
+    updatekitchens: "/update/:id",
+    deletekitchens: "/delete/:kitchenId",
+    getAllkitchens: "/all",
+    getkitchensById: "/:kitchenId",
+  },
+  organization: {
+    newOrganization: "/new",
+    updateOrganization: "/update/:id",
+    deleteOrganization: "/delete/:kitchenId",
+    getAllOrganization: "/all",
+    getOrganizationById: "/:orgId",
   },
 };

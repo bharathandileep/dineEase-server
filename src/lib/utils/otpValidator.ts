@@ -1,13 +1,12 @@
 import Otp from "../../models/users/OTPSModel";
+import User from "../../models/users/UserModel";
 import { ERROR_TYPES } from "../constants/errorType";
 import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
 import { CustomError } from "../errors/customError";
 import { comparePassword } from "../helpers/generatePasswordHash";
 
-export const validateOtp = async (userCredentials: string, otp: string) => {
-  const otpDoc = await Otp.findOne({
-    $or: [{ email: userCredentials }, { phone: userCredentials }],
-  });
+export const validateOtp = async (email: string, otp: string) => {
+  const otpDoc = await Otp.findOne({ email });
   if (!otpDoc) {
     throw new CustomError(
       "The verification code you entered is incorrect. Please try again.",
@@ -15,7 +14,7 @@ export const validateOtp = async (userCredentials: string, otp: string) => {
       ERROR_TYPES.BAD_REQUEST_ERROR,
       false
     );
-  }
+  } 
   if (otpDoc.expiresAt <= new Date()) {
     throw new CustomError(
       "OTP has expired. Please request a new one.",
@@ -36,8 +35,10 @@ export const validateOtp = async (userCredentials: string, otp: string) => {
   if (isOtpValid) {
     otpDoc.attempts = 0;
     await otpDoc.save();
-    return true;
-  } else {
+    // otp is valid the save user info
+    const { email, fullName } = otpDoc;
+    return { email, fullName };
+  } else {  
     otpDoc.attempts += 1;
     await otpDoc.save();
     throw new CustomError(

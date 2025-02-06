@@ -1,0 +1,212 @@
+import { Request, Response } from "express";
+import { CustomError } from "../../lib/errors/customError";
+import {
+  sendErrorResponse,
+  sendSuccessResponse,
+} from "../../lib/helpers/responseHelper";
+import { HTTP_STATUS_CODE } from "../../lib/constants/httpStatusCodes";
+import { ERROR_TYPES } from "../../lib/constants/errorType";
+import { generateAndEmailOtp } from "../../lib/utils/generateAndEmailOtp";
+import { validateOtp } from "../../lib/utils/otpValidator";
+import User from "../../models/users/UserModel";
+import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
+import { generateJWTToken } from "../../lib/helpers/generateJWTToken";
+import {
+  accessTokenExpiration,
+  accessTokenSecret,
+} from "../../config/environment";
+
+export const handleGoogleAuth = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, name, picture } = req.body.user;
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({
+        fullName: name,
+        email,
+        profile_photo: picture,
+      });
+      await user.save();
+    }
+    const payload = {
+      email: user.email,
+      fullName: user.fullName,
+      profileImg: user.profile_photo,
+    };
+    appendRefreshTokenCookies(res, payload);
+    const accessToken = generateJWTToken(
+      accessTokenSecret,
+      payload,
+      accessTokenExpiration
+    );
+    const message = user.isNew
+      ? "Welcome! Your account has been created successfully."
+      : "User logged in successfully.";
+
+    return sendSuccessResponse(res, message, accessToken, HTTP_STATUS_CODE.OK);
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
+export const generateRegistrationOtp = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, fullName } = req.body;
+    let user = await User.findOne({ email });
+    if (user) {
+      throw new CustomError(
+        `This email address is already registered. Please try signing.`,
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+    const result = await generateAndEmailOtp(email, fullName);
+    if (!result.success) {
+      throw new CustomError(
+        `Failed to send OTP to the email address. Please try again later.`,
+        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+        ERROR_TYPES.SERVER_ERROR,
+        false
+      );
+    }
+    return sendSuccessResponse(
+      res,
+      "Verification code sent successfully to your email address.",
+      { email },
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
+export const generateLoginOtp = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email } = req.body;
+    let user = await User.findOne({ email });
+    if (!user) {
+      throw new CustomError(
+        "Email not registered. Please sign up to continue.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+    const result = await generateAndEmailOtp(user.email, user.fullName);
+    if (!result.success) {
+      throw new CustomError(
+        `Failed to send OTP to the email address. Please try again later.`,
+        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+        ERROR_TYPES.SERVER_ERROR,
+        false
+      );
+    }
+    return sendSuccessResponse(
+      res,
+      "Verification code sent successfully to your email address.",
+      { email },
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
+export const handleAuthenticateOtp = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, otp } = req.body;
+    const userDetails = await validateOtp(email, otp);
+    const newUser = new User({
+      fullName: userDetails.fullName,
+      email: userDetails.email,
+    });
+    const isUserCreated = await newUser.save();
+    if (!isUserCreated) {
+      throw new CustomError(
+        "We're experiencing a temporary technical issue. Please try your request again in a few moments. If the problem persists, contact our support team.",
+        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+        ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE,
+        false
+      );
+    }
+    return sendSuccessResponse(
+      res,
+      "Great! Your email address has been successfully verified.",
+      null,
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
+export const handleLoginOtpVerification = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, otp } = req.body;
+    let user = await User.findOne({ email });
+    if (!user) {
+      throw new CustomError(
+        "Email not registered. Please sign up to continue.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+    await validateOtp(email, otp);
+    return sendSuccessResponse(
+      res,
+      "Great! Your email address has been successfully verified.",
+      null,
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
+export const handlePhoneRegistration = (req: Request, res: Response) => {};
+
+// note to change
+// make a single function that can generate and send otp
+// make sure that db error not to the client (validate fields before db)

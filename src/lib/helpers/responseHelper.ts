@@ -1,4 +1,3 @@
-
 import { Response } from "express";
 import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
 import { ERROR_TYPES } from "../constants/errorType";
@@ -9,7 +8,7 @@ export const sendSuccessResponse = (
   data: any = null,
   statusCode: number = HTTP_STATUS_CODE.OK
 ) => {
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     status: true,
     message: message,
     data: data,
@@ -26,7 +25,7 @@ export const sendErrorResponse = (
   errorType: string = ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE,
   details: string = ""
 ) => {
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     status: false,
     message: error.message,
     errorType: errorType,
