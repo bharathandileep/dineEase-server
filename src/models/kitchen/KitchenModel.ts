@@ -41,7 +41,7 @@ export const KitchenSchema: Schema = new Schema<IKitchen>({
   restaurant_type: { type: String, required: true },
   kitchen_type: {
     type: String,
-    required: true,
+    required: true,   
     enum: ["Veg", "Non-Veg","Both"],
   },
   kitchen_phone_number: { type: String, required: true },

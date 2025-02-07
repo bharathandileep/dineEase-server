@@ -1,6 +1,7 @@
 import Express, { Application, NextFunction } from "express";
 import { errorHandler } from "./middleware/globelErrorHandler";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import { apiConfig } from "./config/endpoint ";
 import { CustomError } from "./lib/errors/customError";
@@ -17,13 +18,11 @@ export const app: Application = Express();
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(cookieParser());
 
 app.use(`${apiConfig.baseAPIUrl}/auth`, authRoute);
 app.use(`${apiConfig.baseAPIUrl}/kitchens`, kitchensRoute);
 app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
-
-
-
 
 // Health check route
 app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {

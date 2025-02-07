@@ -11,7 +11,7 @@ import {
   hashPassword,
 } from "../../lib/helpers/generatePasswordHash";
 import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
-import { generateJWTToken } from "../../lib/helpers/generateJWTToken";
+import { generateJWTToken } from "../../lib/helpers/JWTToken";
 import {
   accessTokenExpiration,
   accessTokenSecret,

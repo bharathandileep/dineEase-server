@@ -4,7 +4,7 @@ import {
   refreshTokenExpiration,
   refreshTokenSecret,
 } from "../../config/environment";
-import { generateJWTToken } from "../helpers/generateJWTToken";
+import { generateJWTToken } from "../helpers/JWTToken";
 import { Response } from "express";
 
 // Function to create and send both and refresh token

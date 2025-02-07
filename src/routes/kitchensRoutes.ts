@@ -33,6 +33,8 @@ router.put(
   ]),
   handleUpdateKitchensById
 );
+
+
 router.delete(`${apiConfig.kitchens.deletekitchens}`, handleDeleteKitchens);
 
 export default router;
