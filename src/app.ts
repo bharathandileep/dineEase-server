@@ -10,8 +10,10 @@ import { ERROR_TYPES } from "./lib/constants/errorType";
 import { sendSuccessResponse } from "./lib/helpers/responseHelper";
 
 import authRoute from "./routes/AuthRoute";
-import kitchensRoute from "./routes/kitchensRoutes";
+import kitchensRoute from "./routes/kitchen/kitchensRoutes";
 import organizationRoute from "./routes/organizationRoute";
+import menuCategoryRoutes from "./routes/kitchen/categoryRoutes";
+import menuSubCategoryRoutes from "./routes/kitchen/subcategoryRoutes";
 
 export const app: Application = Express();
 
@@ -20,9 +22,14 @@ app.use(Express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
+
+
 app.use(`${apiConfig.baseAPIUrl}/auth`, authRoute);
 app.use(`${apiConfig.baseAPIUrl}/kitchens`, kitchensRoute);
+app.use(`${apiConfig.baseAPIUrl}/menu-category`, menuCategoryRoutes);
+app.use(`${apiConfig.baseAPIUrl}/sub-menu-category`, menuSubCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
+
 
 // Health check route
 app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {
@@ -31,6 +38,7 @@ app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {
     "The server is up and running. All systems are operational."
   );
 });
+
 
 // 404 Error handler for all non-existing routes
 app.use("*", (req, res, next) => {
@@ -41,5 +49,6 @@ app.use("*", (req, res, next) => {
     false
   );
 });
+
 
 app.use(errorHandler);

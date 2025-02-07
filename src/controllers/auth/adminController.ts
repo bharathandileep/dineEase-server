@@ -23,26 +23,24 @@ export const handleRegisterAdmin = async (req: Request, res: Response) => {
     const { fullName, email, userName, password } = req.body;
 
     if (!fullName || !email || !password) {
-      return sendErrorResponse(
-        res,
+      throw new CustomError(
         "All fields are required",
         HTTP_STATUS_CODE.BAD_REQUEST,
-        ERROR_TYPES.VALIDATION_ERROR
+        ERROR_TYPES.BAD_GATEWAY_ERROR,
+        false
       );
     }
-
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
-      return sendErrorResponse(
-        res,
+      throw new CustomError(
         "Admin already exists",
-        HTTP_STATUS_CODE.BAD_GATEWAY,
-        ERROR_TYPES.BAD_GATEWAY_ERROR
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_GATEWAY_ERROR,
+        false
       );
     }
 
     const hashedPassword = await hashPassword(password);
-
     const newAdmin = new Admin({
       fullName,
       userName,
@@ -51,9 +49,12 @@ export const handleRegisterAdmin = async (req: Request, res: Response) => {
     });
 
     await newAdmin.save();
-    res
-      .status(HTTP_STATUS_CODE.CREATED)
-      .json({ message: "Admin registered successfully" });
+    sendSuccessResponse(
+      res,
+      "Admin registered successfully",
+      null,
+      HTTP_STATUS_CODE.OK
+    );
   } catch (error) {
     sendErrorResponse(
       res,
@@ -63,16 +64,17 @@ export const handleRegisterAdmin = async (req: Request, res: Response) => {
     );
   }
 };
+
 export const handleAdminLogin = async (req: Request, res: Response) => {
   try {
     const { userName, password } = req.body;
 
     if (!userName || !password) {
-      return sendErrorResponse(
-        res,
+      throw new CustomError(
         "user name and password are required",
         HTTP_STATUS_CODE.BAD_REQUEST,
-        ERROR_TYPES.VALIDATION_ERROR
+        ERROR_TYPES.BAD_GATEWAY_ERROR,
+        false
       );
     }
 
@@ -103,7 +105,7 @@ export const handleAdminLogin = async (req: Request, res: Response) => {
       payload,
       accessTokenExpiration
     );
-    return sendSuccessResponse(
+    sendSuccessResponse(
       res,
       "User logged in successfully.",
       { token: accessToken },

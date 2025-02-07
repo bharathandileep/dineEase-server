@@ -1,13 +1,8 @@
 import express, { Application, Router } from "express";
-import { apiConfig } from "../config/endpoint ";
-import {
-  handleCreateNewKitchens,
-  handleDeleteKitchens,
-  handleGetKitchens,
-  handleGetKitchensById,
-  handleUpdateKitchensById,
-} from "../controllers/kitchens/kitchenController";
-import upload from "../lib/helpers/uploadMiddleware";
+import { apiConfig } from "../../config/endpoint ";
+import upload from "../../lib/helpers/uploadMiddleware";
+import { handleCreateNewKitchens, handleDeleteKitchens, handleGetKitchens, handleGetKitchensById, handleUpdateKitchensById } from "../../controllers/kitchens/kitchenController";
+
 
 const router = express.Router();
 

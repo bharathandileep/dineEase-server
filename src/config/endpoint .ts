@@ -25,6 +25,20 @@ export const apiConfig = {
     getAllkitchens: "/all",
     getkitchensById: "/:kitchenId",
   },
+  menu: {
+    createCategory: '/categories',
+    getAllCategories: '/categories',
+    updateCategory: '/categories/:id',
+    deleteCategory: '/categories/:id',
+    toggleCategoryStatus: '/categories/:id/toggle-status',
+
+    createSubcategory: '/subcategories',
+    getSubcategoriesByCategory: '/categories/:categoryId/subcategories',
+    getSubcategoryById: '/subcategories/:id',
+    updateSubcategory: '/subcategories/:id',
+    deleteSubcategory: '/subcategories/:id',
+    toggleSubcategoryStatus: '/subcategories/:id/toggle-status',
+  },
   organization: {
     newOrganization: "/new",
     updateOrganization: "/update/:id",
