@@ -56,8 +56,7 @@ export const createCategory = async (req: Request, res: Response) => {
 // Get all categories
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await MenuCategory.find({status: true});
-
+    const categories = await MenuCategory.find();
     sendSuccessResponse(
       res,
       "Categories retrieved successfully",
@@ -116,7 +115,6 @@ export const updateCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { category } = req.body;
-
     const existingCategory = await MenuCategory.findById(id);
     if (!existingCategory) {
       throw new CustomError(

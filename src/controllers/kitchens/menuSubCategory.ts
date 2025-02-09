@@ -10,12 +10,31 @@ import {
 } from "../../lib/helpers/responseHelper";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 
+export const getAllSubCategories = async (req: Request, res: Response) => {
+  try {
+    const categories = await MenuSubcategory.find();
+
+    sendSuccessResponse(
+      res,
+      "Categories retrieved successfully",
+      categories,
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
 // Create subcategory
 export const createSubcategory = async (req: Request, res: Response) => {
   try {
-    const { subcategoryName, category } = req.body;
-
-    if (!subcategoryName || !category) {
+    const { category, subcategoryName } = req.body;
+    if (!category || !subcategoryName) {
       throw new CustomError(
         "Subcategory name and category are required",
         HTTP_STATUS_CODE.BAD_REQUEST,
@@ -83,7 +102,7 @@ export const getSubcategoriesByCategory = async (
 
     const category = await MenuCategory.findOne({
       _id: categoryId,
-      status: true, 
+      status: true,
     });
 
     if (!category) {

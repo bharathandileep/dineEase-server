@@ -31,7 +31,8 @@ export const apiConfig = {
     updateCategory: '/categories/:id',
     deleteCategory: '/categories/:id',
     toggleCategoryStatus: '/categories/:id/toggle-status',
-
+    
+    getAllSubCategories: '/subcategories',
     createSubcategory: '/subcategories',
     getSubcategoriesByCategory: '/categories/:categoryId/subcategories',
     getSubcategoryById: '/subcategories/:id',
