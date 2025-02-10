@@ -2,17 +2,17 @@ import { Request, Response } from "express";
 import { CustomError } from "../../lib/errors/customError";
 import { HTTP_STATUS_CODE } from "../../lib/constants/httpStatusCodes";
 import { ERROR_TYPES } from "../../lib/constants/errorType";
-import MenuCategory from "../../models/items/MenuCategory";
-import MenuSubcategory from "../../models/items/MenuSubcategory";
 import {
   sendErrorResponse,
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
+import kitchenSubcategory from "../../models/kitchen/KitchenSubCategorymodel";
+import kitchenCategory from "../../models/kitchen/KitchenCategoryModel";
 
-export const getAllSubCategories = async (req: Request, res: Response) => {
+export const kitchenGetAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await MenuSubcategory.find();
+    const categories = await kitchenSubcategory.find();
 
     sendSuccessResponse(
       res,
@@ -31,7 +31,7 @@ export const getAllSubCategories = async (req: Request, res: Response) => {
 };
 
 // Create subcategory
-export const createSubcategory = async (req: Request, res: Response) => {
+export const kitchenCreateSubcategory = async (req: Request, res: Response) => {
   try {
     const { category, subcategoryName } = req.body;
     if (!category || !subcategoryName) {
@@ -43,7 +43,7 @@ export const createSubcategory = async (req: Request, res: Response) => {
       );
     }
 
-    const existingCategory = await MenuCategory.findById(category);
+    const existingCategory = await kitchenCategory.findById(category);
     if (!existingCategory) {
       throw new CustomError(
         "Category not found",
@@ -52,7 +52,7 @@ export const createSubcategory = async (req: Request, res: Response) => {
         false
       );
     }
-    const existingSubcategory = await MenuSubcategory.findOne({
+    const existingSubcategory = await kitchenSubcategory.findOne({
       subcategoryName,
       category,
     });
@@ -66,7 +66,7 @@ export const createSubcategory = async (req: Request, res: Response) => {
       );
     }
 
-    const newSubcategory = new MenuSubcategory({
+    const newSubcategory = new kitchenSubcategory({
       subcategoryName,
       category,
       status: true,
@@ -91,7 +91,7 @@ export const createSubcategory = async (req: Request, res: Response) => {
 };
 
 // Get subcategories by category
-export const getSubcategoriesByCategory = async (
+export const kitchenGetSubcategoriesByCategory = async (
   req: Request,
   res: Response
 ) => {
@@ -100,7 +100,7 @@ export const getSubcategoriesByCategory = async (
 
     validateMogooseObjectId(categoryId);
 
-    const category = await MenuCategory.findOne({
+    const category = await kitchenCategory.findOne({
       _id: categoryId,
       status: true,
     });
@@ -113,7 +113,7 @@ export const getSubcategoriesByCategory = async (
         false
       );
     }
-    const subcategories = await MenuSubcategory.find({
+    const subcategories = await kitchenSubcategory.find({
       category: categoryId,
       status: true,
     });
@@ -135,12 +135,12 @@ export const getSubcategoriesByCategory = async (
 };
 
 // Update subcategory
-export const updateSubcategory = async (req: Request, res: Response) => {
+export const kitchenUpdateSubcategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { subcategoryName, category } = req.body;
 
-    const existingSubcategory = await MenuSubcategory.findById(id);
+    const existingSubcategory = await kitchenSubcategory.findById(id);
     if (!existingSubcategory) {
       throw new CustomError(
         "Subcategory not found",
@@ -149,9 +149,9 @@ export const updateSubcategory = async (req: Request, res: Response) => {
         false
       );
     }
- 
+
     if (category) {
-      const categoryExists = await MenuCategory.findById(category);
+      const categoryExists = await kitchenCategory.findById(category);
       if (!categoryExists) {
         throw new CustomError(
           "Category not found",
@@ -163,7 +163,7 @@ export const updateSubcategory = async (req: Request, res: Response) => {
     }
 
     if (subcategoryName && category) {
-      const duplicateSubcategory = await MenuSubcategory.findOne({
+      const duplicateSubcategory = await kitchenSubcategory.findOne({
         subcategoryName,
         category,
         _id: { $ne: id },
@@ -179,11 +179,9 @@ export const updateSubcategory = async (req: Request, res: Response) => {
       }
     }
 
-    const updatedSubcategory = await MenuSubcategory.findByIdAndUpdate(
-      id,
-      { subcategoryName, category },
-      { new: true }
-    ).populate("category", "category status");
+    const updatedSubcategory = await kitchenSubcategory
+      .findByIdAndUpdate(id, { subcategoryName, category }, { new: true })
+      .populate("category", "category status");
 
     sendSuccessResponse(
       res,
@@ -202,11 +200,11 @@ export const updateSubcategory = async (req: Request, res: Response) => {
 };
 
 // Toggle subcategory status
-export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
+export const kitchenToggleSubcategoryStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const subcategory = await MenuSubcategory.findById(id);
+    const subcategory = await kitchenSubcategory.findById(id);
     if (!subcategory) {
       throw new CustomError(
         "Subcategory not found",
@@ -216,11 +214,9 @@ export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
       );
     }
 
-    const updatedSubcategory = await MenuSubcategory.findByIdAndUpdate(
-      id,
-      { status: !subcategory.status },
-      { new: true }
-    ).populate("category", "category status");
+    const updatedSubcategory = await kitchenSubcategory
+      .findByIdAndUpdate(id, { status: !subcategory.status }, { new: true })
+      .populate("category", "category status");
 
     sendSuccessResponse(
       res,
@@ -241,11 +237,11 @@ export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
 };
 
 // Delete subcategory
-export const deleteSubcategory = async (req: Request, res: Response) => {
+export const kitchenDeleteSubcategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const subcategory = await MenuSubcategory.findById(id);
+    const subcategory = await kitchenSubcategory.findById(id);
     if (!subcategory) {
       throw new CustomError(
         "Subcategory not found",
@@ -255,32 +251,12 @@ export const deleteSubcategory = async (req: Request, res: Response) => {
       );
     }
 
-    await MenuSubcategory.findByIdAndDelete(id);
+    await kitchenSubcategory.findByIdAndDelete(id);
 
     sendSuccessResponse(
       res,
       "Subcategory deleted successfully",
       null,
-      HTTP_STATUS_CODE.OK
-    );
-  } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
-  }
-};
-
-// Get all categories
-export const getAllCategories = async (req: Request, res: Response) => {
-  try {
-    const categories = await MenuCategory.find({status:true});
-    sendSuccessResponse(
-      res,
-      "Categories retrieved successfully",
-      categories,
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
