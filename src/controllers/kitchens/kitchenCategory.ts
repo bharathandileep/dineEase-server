@@ -96,7 +96,7 @@ export const kitchenToggleCategoryStatus = async (
       { status: !category.status },
       { new: true }
     );
-
+     
     sendSuccessResponse(
       res,
       `Category status ${

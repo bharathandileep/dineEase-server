@@ -7,8 +7,9 @@ import {
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
 import MenuCategory from "../../models/items/MenuCategory";
+import MenuSubcategory from "../../models/items/MenuSubcategory";
+import mongoose from "mongoose";
 
-// Create a new category
 export const createCategory = async (req: Request, res: Response) => {
   try {
     const { category } = req.body;
@@ -53,7 +54,6 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
-// Get all categories
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
     const categories = await MenuCategory.find();
@@ -76,7 +76,6 @@ export const getAllCategories = async (req: Request, res: Response) => {
 export const toggleCategoryStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
     const category = await MenuCategory.findById(id);
     if (!category) {
       throw new CustomError(
@@ -87,16 +86,32 @@ export const toggleCategoryStatus = async (req: Request, res: Response) => {
       );
     }
 
-    const updatedCategory = await MenuCategory.findByIdAndUpdate(
-      id,
-      { status: !category.status },
-      { new: true }
-    );
+    const newStatus = !category.status;
+    const session = await mongoose.startSession();
+    let updatedCategory;
+
+    await session.withTransaction(async () => {
+      updatedCategory = await MenuCategory.findByIdAndUpdate(
+        id,
+        { status: newStatus },
+        { new: true, session }
+      );
+      await MenuSubcategory.updateMany(
+        { category: id },
+        { status: newStatus },
+        { session }
+      );
+    });
+
+    await session.endSession();
+    const updatedSubcategoriesCount = await MenuSubcategory.countDocuments({
+      category: id,
+    });
 
     sendSuccessResponse(
       res,
-      `Category status ${
-        updatedCategory?.status ? "activated" : "deactivated"
+      `Category and ${updatedSubcategoriesCount} subcategories ${
+        newStatus ? "activated" : "deactivated"
       } successfully`,
       updatedCategory,
       HTTP_STATUS_CODE.OK

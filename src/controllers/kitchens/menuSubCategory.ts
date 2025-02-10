@@ -12,8 +12,10 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 
 export const getAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await MenuSubcategory.find();
-
+    const categories = await MenuSubcategory.find().populate(
+      "category",
+      "category status"
+    );
     sendSuccessResponse(
       res,
       "Categories retrieved successfully",
@@ -149,7 +151,7 @@ export const updateSubcategory = async (req: Request, res: Response) => {
         false
       );
     }
- 
+
     if (category) {
       const categoryExists = await MenuCategory.findById(category);
       if (!categoryExists) {
@@ -202,11 +204,53 @@ export const updateSubcategory = async (req: Request, res: Response) => {
 };
 
 // Toggle subcategory status
+// export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
+//   try {
+//     const { id } = req.params;
+
+//     const subcategory = await MenuSubcategory.findById(id);
+//     if (!subcategory) {
+//       throw new CustomError(
+//         "Subcategory not found",
+//         HTTP_STATUS_CODE.NOT_FOUND,
+//         ERROR_TYPES.NOT_FOUND_ERROR,
+//         false
+//       );
+//     }
+
+//     const updatedSubcategory = await MenuSubcategory.findByIdAndUpdate(
+//       id,
+//       { status: !subcategory.status },
+//       { new: true }
+//     ).populate("category", "category status");
+
+//     sendSuccessResponse(
+//       res,
+//       `Subcategory status ${
+//         updatedSubcategory?.status ? "activated" : "deactivated"
+//       } successfully`,
+//       updatedSubcategory,
+//       HTTP_STATUS_CODE.OK
+//     );
+//   } catch (error) {
+//     sendErrorResponse(
+//       res,
+//       error,
+//       HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+//       ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+//     );
+//   }
+// };
+
 export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const subcategory = await MenuSubcategory.findById(id);
+    // Add type assertion or properly type the populated document
+    const subcategory = await MenuSubcategory.findById(id).populate<{
+      category: any;
+    }>("category", "category status");
+
     if (!subcategory) {
       throw new CustomError(
         "Subcategory not found",
@@ -215,12 +259,21 @@ export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
         false
       );
     }
+    const newStatus = !subcategory.status;
+    if (newStatus && !subcategory.category.status) {
+      throw new CustomError(
+        "Cannot activate subcategory when parent category is inactive",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.VALIDATION_ERROR,
+        false
+      );
+    }
 
     const updatedSubcategory = await MenuSubcategory.findByIdAndUpdate(
       id,
-      { status: !subcategory.status },
+      { status: newStatus },
       { new: true }
-    ).populate("category", "category status");
+    ).populate<{ category: any }>("category", "category status");
 
     sendSuccessResponse(
       res,
@@ -274,9 +327,9 @@ export const deleteSubcategory = async (req: Request, res: Response) => {
 };
 
 // Get all categories
-export const getAllCategories = async (req: Request, res: Response) => {
+export const getAllCategoriesByStatus = async (req: Request, res: Response) => {
   try {
-    const categories = await MenuCategory.find({status:true});
+    const categories = await MenuCategory.find({ status: true });
     sendSuccessResponse(
       res,
       "Categories retrieved successfully",
