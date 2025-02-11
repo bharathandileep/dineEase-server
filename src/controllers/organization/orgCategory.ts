@@ -6,11 +6,12 @@ import {
   sendErrorResponse,
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
-import MenuCategory from "../../models/items/MenuCategory";
-import MenuSubcategory from "../../models/items/MenuSubcategory";
 import mongoose from "mongoose";
+import OrgSubcategory from "../../models/organisations/OrgSubCategory";
+import OrgCategory from "../../models/organisations/OrgCategory";
 
-export const createCategory = async (req: Request, res: Response) => {
+// Create a new category
+export const orgCreateCategory = async (req: Request, res: Response) => {
   try {
     const { category } = req.body;
     if (!category) {
@@ -21,7 +22,7 @@ export const createCategory = async (req: Request, res: Response) => {
         false
       );
     }
-    const existingCategory = await MenuCategory.findOne({ category });
+    const existingCategory = await OrgCategory.findOne({ category });
     if (existingCategory) {
       throw new CustomError(
         "Category already exists",
@@ -31,7 +32,7 @@ export const createCategory = async (req: Request, res: Response) => {
       );
     }
 
-    const newCategory = new MenuCategory({
+    const newCategory = new OrgCategory({
       category,
       status: true,
     });
@@ -54,9 +55,11 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllCategories = async (req: Request, res: Response) => {
+// Get all categories
+export const orgGetAllCategories = async (req: Request, res: Response) => {
+  console.log("haii");
   try {
-    const categories = await MenuCategory.find();
+    const categories = await OrgCategory.find();
     sendSuccessResponse(
       res,
       "Categories retrieved successfully",
@@ -73,10 +76,10 @@ export const getAllCategories = async (req: Request, res: Response) => {
   }
 };
 
-export const toggleCategoryStatus = async (req: Request, res: Response) => {
+export const orgToggleCategoryStatus = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params; 
-    const category = await MenuCategory.findById(id);
+    const { id } = req.params;
+    const category = await OrgCategory.findById(id);
     if (!category) {
       throw new CustomError(
         "Category not found",
@@ -91,12 +94,12 @@ export const toggleCategoryStatus = async (req: Request, res: Response) => {
     let updatedCategory;
 
     await session.withTransaction(async () => {
-      updatedCategory = await MenuCategory.findByIdAndUpdate(
+      updatedCategory = await OrgCategory.findByIdAndUpdate(
         id,
         { status: newStatus },
         { new: true, session }
       );
-      await MenuSubcategory.updateMany(
+      await OrgSubcategory.updateMany(
         { category: id },
         { status: newStatus },
         { session }
@@ -104,7 +107,7 @@ export const toggleCategoryStatus = async (req: Request, res: Response) => {
     });
 
     await session.endSession();
-    const updatedSubcategoriesCount = await MenuSubcategory.countDocuments({
+    const updatedSubcategoriesCount = await OrgSubcategory.countDocuments({
       category: id,
     });
 
@@ -126,11 +129,11 @@ export const toggleCategoryStatus = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCategory = async (req: Request, res: Response) => {
+export const orgUpdateCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { category } = req.body;
-    const existingCategory = await MenuCategory.findById(id);
+    const existingCategory = await OrgCategory.findById(id);
     if (!existingCategory) {
       throw new CustomError(
         "Category not found",
@@ -141,7 +144,7 @@ export const updateCategory = async (req: Request, res: Response) => {
     }
 
     if (category) {
-      const duplicateCategory = await MenuCategory.findOne({
+      const duplicateCategory = await OrgCategory.findOne({
         category,
         _id: { $ne: id },
       });
@@ -156,7 +159,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       }
     }
 
-    const updatedCategory = await MenuCategory.findByIdAndUpdate(
+    const updatedCategory = await OrgCategory.findByIdAndUpdate(
       id,
       { category },
       { new: true }
@@ -179,10 +182,10 @@ export const updateCategory = async (req: Request, res: Response) => {
 };
 
 // Delete category
-export const deleteCategory = async (req: Request, res: Response) => {
+export const orgDeleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const category = await MenuCategory.findById(id);
+    const category = await OrgCategory.findById(id);
     if (!category) {
       throw new CustomError(
         "Category not found",
@@ -191,8 +194,8 @@ export const deleteCategory = async (req: Request, res: Response) => {
         false
       );
     }
-
-    await MenuCategory.findByIdAndDelete(id);
+     
+    await OrgCategory.findByIdAndDelete(id);
 
     sendSuccessResponse(
       res,

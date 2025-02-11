@@ -7,6 +7,8 @@ import {
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
 import kitchenCategory from "../../models/kitchen/KitchenCategoryModel";
+import mongoose from "mongoose";
+import kitchenSubcategory from "../../models/kitchen/KitchenSubCategorymodel";
 
 // Create a new category
 export const kitchenCreateCategory = async (req: Request, res: Response) => {
@@ -55,7 +57,7 @@ export const kitchenCreateCategory = async (req: Request, res: Response) => {
 
 // Get all categories
 export const kitchenGetAllCategories = async (req: Request, res: Response) => {
-    console.log("haii")
+  console.log("haii");
   try {
     const categories = await kitchenCategory.find();
     sendSuccessResponse(
@@ -80,7 +82,6 @@ export const kitchenToggleCategoryStatus = async (
 ) => {
   try {
     const { id } = req.params;
-
     const category = await kitchenCategory.findById(id);
     if (!category) {
       throw new CustomError(
@@ -91,16 +92,32 @@ export const kitchenToggleCategoryStatus = async (
       );
     }
 
-    const updatedCategory = await kitchenCategory.findByIdAndUpdate(
-      id,
-      { status: !category.status },
-      { new: true }
-    );
-     
+    const newStatus = !category.status;
+    const session = await mongoose.startSession();
+    let updatedCategory;
+
+    await session.withTransaction(async () => {
+      updatedCategory = await kitchenCategory.findByIdAndUpdate(
+        id,
+        { status: newStatus },
+        { new: true, session }
+      );
+      await kitchenSubcategory.updateMany(
+        { category: id },
+        { status: newStatus },
+        { session }
+      );
+    });
+
+    await session.endSession();
+    const updatedSubcategoriesCount = await kitchenSubcategory.countDocuments({
+      category: id,
+    });
+
     sendSuccessResponse(
       res,
-      `Category status ${
-        updatedCategory?.status ? "activated" : "deactivated"
+      `Category and ${updatedSubcategoriesCount} subcategories ${
+        newStatus ? "activated" : "deactivated"
       } successfully`,
       updatedCategory,
       HTTP_STATUS_CODE.OK

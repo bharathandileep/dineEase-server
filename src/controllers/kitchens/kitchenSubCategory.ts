@@ -10,7 +10,10 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import kitchenSubcategory from "../../models/kitchen/KitchenSubCategorymodel";
 import kitchenCategory from "../../models/kitchen/KitchenCategoryModel";
 
-export const kitchenGetAllSubCategories = async (req: Request, res: Response) => {
+export const kitchenGetAllSubCategories = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const categories = await kitchenSubcategory.find();
 
@@ -199,12 +202,17 @@ export const kitchenUpdateSubcategory = async (req: Request, res: Response) => {
   }
 };
 
-// Toggle subcategory status
-export const kitchenToggleSubcategoryStatus = async (req: Request, res: Response) => {
+export const kitchenToggleSubcategoryStatus = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { id } = req.params;
+    console.log(id);
+    const subcategory = await kitchenSubcategory.findById(id).populate<{
+      category: any;
+    }>("category", "category status");
 
-    const subcategory = await kitchenSubcategory.findById(id);
     if (!subcategory) {
       throw new CustomError(
         "Subcategory not found",
@@ -213,10 +221,19 @@ export const kitchenToggleSubcategoryStatus = async (req: Request, res: Response
         false
       );
     }
+    const newStatus = !subcategory.status;
+    if (newStatus && !subcategory.category.status) {
+      throw new CustomError(
+        "Cannot activate subcategory when parent category is inactive",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.VALIDATION_ERROR,
+        false
+      );
+    }
 
     const updatedSubcategory = await kitchenSubcategory
-      .findByIdAndUpdate(id, { status: !subcategory.status }, { new: true })
-      .populate("category", "category status");
+      .findByIdAndUpdate(id, { status: newStatus }, { new: true })
+      .populate<{ category: any }>("category", "category status");
 
     sendSuccessResponse(
       res,
