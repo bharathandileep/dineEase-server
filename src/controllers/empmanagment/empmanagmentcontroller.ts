@@ -10,6 +10,8 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import EmployeeManagement from "../../models/empmanagment/EmployeeManagementModel";
 import Designation from "../../models/designation/designationModel";
 import Address from "../../models/address/AddressModel";
+import { createAddressAndUpdateModel } from "../../lib/helpers/addressUpdater";
+import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 
 // Get all employees
 export const getAllEmployees = async (req: Request, res: Response) => {
@@ -44,14 +46,21 @@ export const createEmployee = async (req: Request, res: Response) => {
       username,
       email,
       phone_number,
-      address,
-      role,
-      employee_status,
+      city,
+      state,
+      district = "", // Ensure a value exists
+      pincode,
+      country,
+      street_address, // Fix field name to match frontend
+      role = "Employee", // Default role
+      employee_status = "Active", // Default status
       aadhar_number,
       pan_number,
-      profile_picture,
+      
     } = req.body;
-
+   
+const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    // Validation: Ensure all required fields exist
     if (
       !entity_id ||
       !entity_type ||
@@ -59,7 +68,6 @@ export const createEmployee = async (req: Request, res: Response) => {
       !username ||
       !email ||
       !phone_number ||
-      !address ||
       !employee_status ||
       !aadhar_number ||
       !pan_number
@@ -71,25 +79,14 @@ export const createEmployee = async (req: Request, res: Response) => {
         false
       );
     }
-
+    
     validateMogooseObjectId(entity_id);
-    validateMogooseObjectId(designation);
-    validateMogooseObjectId(address);
-
+    // validateMogooseObjectId(designation);
+    console.log("hii")
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
         "Designation not found",
-        HTTP_STATUS_CODE.NOT_FOUND,
-        ERROR_TYPES.NOT_FOUND_ERROR,
-        false
-      );
-    }
-
-    const existingAddress = await Address.findById(address);
-    if (!existingAddress) {
-      throw new CustomError(
-        "Address not found",
         HTTP_STATUS_CODE.NOT_FOUND,
         ERROR_TYPES.NOT_FOUND_ERROR,
         false
@@ -105,7 +102,10 @@ export const createEmployee = async (req: Request, res: Response) => {
         false
       );
     }
-
+    const profile_picture = await uploadFileToCloudinary(
+      files.profile_picture[0].buffer
+    );  
+    // Create new employee
     const newEmployee = new EmployeeManagement({
       entity_id,
       entity_type,
@@ -113,7 +113,6 @@ export const createEmployee = async (req: Request, res: Response) => {
       username,
       email,
       phone_number,
-      address,
       role,
       employee_status,
       aadhar_number,
@@ -121,7 +120,17 @@ export const createEmployee = async (req: Request, res: Response) => {
       profile_picture,
     });
 
-    await newEmployee.save();
+    const empDetails = await newEmployee.save();
+
+    // Ensure district and streetAddress are correctly structured
+    await createAddressAndUpdateModel(EmployeeManagement, empDetails._id, {
+      street_address, // Match with frontend
+      city,
+      state,
+      district,
+      pincode,
+      country,
+    });
 
     sendSuccessResponse(
       res,
@@ -138,6 +147,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     );
   }
 };
+
 
 // Get employee by ID
 export const getEmployeeById = async (req: Request, res: Response) => {

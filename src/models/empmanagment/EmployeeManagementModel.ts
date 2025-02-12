@@ -26,7 +26,7 @@ export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
     entity_type: {
       type: String,
       required: true,
-      enum: ["Kitchen", "Organization"],
+      enum: ["Kitchen", "Organization", "admin"],
     },
     designation: {
       type: mongoose.Schema.Types.ObjectId,
@@ -39,7 +39,7 @@ export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
     address: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
-      required: true,
+
     },
     role: { type: String},
     employee_status: { type: String, required: true },
