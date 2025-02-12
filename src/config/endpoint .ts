@@ -77,4 +77,21 @@ export const apiConfig = {
     toggleSubcategoryStatus: "/subcategories/:id/toggle-status",
     getAllCategoriesByStatus: "/category/status",
   },
+  designation: {
+    createDesignation: "/designations",
+    getAllDesignations: "/designations/all",
+    getDesignationById: "/designations/:id",
+    updateDesignation: "/designations/:id",
+    deleteDesignation: "/designations/:id",
+    toggleDesignationStatus: "/designations/:id/toggle-status",
+  },
+  employee: {
+    createEmployee: "/employees",
+    getAllEmployees: "/employees/all",
+    getEmployeeById: "/employees/:id",
+    updateEmployee: "/employees/:id",
+    deleteEmployee: "/employees/:id",
+    toggleEmployeeStatus: "/employees/:id/toggle-status",
+  }
+  
 };

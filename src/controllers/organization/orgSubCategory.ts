@@ -12,8 +12,7 @@ import OrgCategory from "../../models/organisations/OrgCategory";
 
 export const orgGetAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await OrgSubcategory.find();
-
+    const categories = await OrgSubcategory.find().populate("category", "category status");
     sendSuccessResponse(
       res,
       "Categories retrieved successfully",
