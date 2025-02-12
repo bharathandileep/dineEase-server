@@ -15,8 +15,9 @@ export const kitchenGetAllSubCategories = async (
   res: Response
 ) => {
   try {
-    const categories = await kitchenSubcategory.find();
-
+    const categories = await kitchenSubcategory
+      .find()
+      .populate("category", "category");
     sendSuccessResponse(
       res,
       "Categories retrieved successfully",

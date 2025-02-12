@@ -57,7 +57,6 @@ export const kitchenCreateCategory = async (req: Request, res: Response) => {
 
 // Get all categories
 export const kitchenGetAllCategories = async (req: Request, res: Response) => {
-  console.log("haii");
   try {
     const categories = await kitchenCategory.find();
     sendSuccessResponse(

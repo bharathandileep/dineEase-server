@@ -12,7 +12,10 @@ import OrgCategory from "../../models/organisations/OrgCategory";
 
 export const orgGetAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await OrgSubcategory.find();
+    const categories = await OrgSubcategory.find().populate(
+      "category",
+      "category status"
+    );
 
     sendSuccessResponse(
       res,
@@ -220,7 +223,6 @@ export const orgToggleSubcategoryStatus = async (
         false
       );
     }
-    console.log(subcategory);
     const newStatus = !subcategory.status;
     if (newStatus && !subcategory.category.status) {
       throw new CustomError(

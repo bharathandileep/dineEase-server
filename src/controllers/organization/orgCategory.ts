@@ -57,7 +57,6 @@ export const orgCreateCategory = async (req: Request, res: Response) => {
 
 // Get all categories
 export const orgGetAllCategories = async (req: Request, res: Response) => {
-  console.log("haii");
   try {
     const categories = await OrgCategory.find();
     sendSuccessResponse(
@@ -194,7 +193,7 @@ export const orgDeleteCategory = async (req: Request, res: Response) => {
         false
       );
     }
-     
+
     await OrgCategory.findByIdAndDelete(id);
 
     sendSuccessResponse(
