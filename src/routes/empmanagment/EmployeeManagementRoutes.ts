@@ -12,13 +12,19 @@ import upload from "../../lib/helpers/uploadMiddleware";
 
 const router = express.Router();
 
-router.get(`${apiConfig.employee.getAllEmployees}`, getAllEmployees);
+router.get(`${apiConfig.employee.getAllEmployees}`,
+  upload.fields([
+    { name: "profile_picture", maxCount: 1 },
+  ]), getAllEmployees);
 router.get(`${apiConfig.employee.getEmployeeById}`, getEmployeeById);
 router.post(`${apiConfig.employee.createEmployee}`, 
   upload.fields([
     { name: "profile_picture", maxCount: 1 },
   ]),createEmployee);
-router.put(`${apiConfig.employee.updateEmployee}`, updateEmployee);
+router.put(`${apiConfig.employee.updateEmployee}`, 
+  upload.fields([
+    { name: "profile_picture", maxCount: 1 },
+  ]), updateEmployee);
 router.delete(`${apiConfig.employee.deleteEmployee}`, deleteEmployee);
 router.patch(`${apiConfig.employee.toggleEmployeeStatus}`, toggleEmployeeStatus);
 

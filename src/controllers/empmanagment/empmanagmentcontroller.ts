@@ -10,16 +10,37 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import EmployeeManagement from "../../models/empmanagment/EmployeeManagementModel";
 import Designation from "../../models/designation/designationModel";
 import Address from "../../models/address/AddressModel";
-import { createAddressAndUpdateModel } from "../../lib/helpers/addressUpdater";
+import {
+  createAddressAndUpdateModel,
+  updateAddress,
+} from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
+import mongoose from "mongoose";
 
 // Get all employees
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
-    const employees = await EmployeeManagement.find({ is_deleted: false })
-      .populate("designation", "designation_name")
-      .populate("address", "street city state country");
-
+    const employees = await EmployeeManagement.aggregate([
+      { $match: { is_deleted: false } },
+      {
+        $lookup: {
+          from: "designations",
+          localField: "designation",
+          foreignField: "_id",
+          as: "designation",
+        },
+      },
+      { $unwind: { path: "$designation", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "address_id",
+          foreignField: "_id",
+          as: "address",
+        },
+      },
+    ]);
+    
     sendSuccessResponse(
       res,
       "Employees retrieved successfully",
@@ -56,10 +77,9 @@ export const createEmployee = async (req: Request, res: Response) => {
       employee_status = "Active", // Default status
       aadhar_number,
       pan_number,
-      
     } = req.body;
-   
-const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     // Validation: Ensure all required fields exist
     if (
       !entity_id ||
@@ -79,10 +99,10 @@ const files = req.files as { [fieldname: string]: Express.Multer.File[] };
         false
       );
     }
-    
+
     validateMogooseObjectId(entity_id);
     // validateMogooseObjectId(designation);
-    console.log("hii")
+    console.log("hii");
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
@@ -104,7 +124,7 @@ const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     }
     const profile_picture = await uploadFileToCloudinary(
       files.profile_picture[0].buffer
-    );  
+    );
     // Create new employee
     const newEmployee = new EmployeeManagement({
       entity_id,
@@ -121,7 +141,7 @@ const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     });
 
     const empDetails = await newEmployee.save();
-
+    console.log(empDetails);
     // Ensure district and streetAddress are correctly structured
     await createAddressAndUpdateModel(EmployeeManagement, empDetails._id, {
       street_address, // Match with frontend
@@ -148,18 +168,49 @@ const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   }
 };
 
-
-// Get employee by ID
 export const getEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     validateMogooseObjectId(id);
 
-    const employee = await EmployeeManagement.findById(id)
-      .populate("designation", "designation_name")
-      .populate("address", "street city state country");
+    const employee = await EmployeeManagement.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+          is_deleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "address_id", 
+          foreignField: "_id",
+          as: "address",
+        },
+      },
+      {
+        $unwind: {
+          path: "$address",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "designations",
+          localField: "designation",
+          foreignField: "_id",
+          as: "designation",
+        },
+      },
+      {
+        $unwind: {
+          path: "$designation",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
 
-    if (!employee || employee.is_deleted) {
+    if (!employee || employee.length === 0) {
       throw new CustomError(
         "Employee not found",
         HTTP_STATUS_CODE.NOT_FOUND,
@@ -171,7 +222,7 @@ export const getEmployeeById = async (req: Request, res: Response) => {
     sendSuccessResponse(
       res,
       "Employee retrieved successfully",
-      employee,
+      employee[0], // Accessing the first element since aggregate returns an array
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -189,12 +240,16 @@ export const updateEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Handle file uploads
+    console.log(req.body);
     validateMogooseObjectId(id);
 
+    // Check if designation exists
     if (updateData.designation) {
-      validateMogooseObjectId(updateData.designation);
-      const designationExists = await Designation.findById(updateData.designation);
+      // validateMogooseObjectId(updateData.designation);
+      const designationExists = await Designation.findById(
+        updateData.designation
+      );
       if (!designationExists) {
         throw new CustomError(
           "Designation not found",
@@ -205,19 +260,45 @@ export const updateEmployee = async (req: Request, res: Response) => {
       }
     }
 
-    if (updateData.address) {
-      validateMogooseObjectId(updateData.address);
-      const addressExists = await Address.findById(updateData.address);
-      if (!addressExists) {
-        throw new CustomError(
-          "Address not found",
-          HTTP_STATUS_CODE.NOT_FOUND,
-          ERROR_TYPES.NOT_FOUND_ERROR,
-          false
-        );
-      }
+    // Fetch the existing employee
+    const existingEmployee = await EmployeeManagement.findById(id);
+    if (!existingEmployee || existingEmployee.is_deleted) {
+      throw new CustomError(
+        "Employee not found",
+        HTTP_STATUS_CODE.NOT_FOUND,
+        ERROR_TYPES.NOT_FOUND_ERROR,
+        false
+      );
     }
 
+    // Handle profile picture upload (if updated)
+    if (files && files.profile_picture) {
+      const profile_picture = await uploadFileToCloudinary(
+        files.profile_picture[0].buffer
+      );
+      updateData.profile_picture = profile_picture;
+    }
+
+    // Update address fields (if provided)
+    if (
+      updateData.street_address ||
+      updateData.city ||
+      updateData.state ||
+      updateData.district ||
+      updateData.pincode ||
+      updateData.country
+    ) {
+      await updateAddress(EmployeeManagement, id, {
+        street_address: updateData.street_address,
+        city: updateData.city,
+        state: updateData.state,
+        district: updateData.district,
+        pincode: updateData.pincode,
+        country: updateData.country,
+      });
+    }
+
+    // Update employee details
     const updatedEmployee = await EmployeeManagement.findByIdAndUpdate(
       id,
       updateData,
@@ -267,7 +348,8 @@ export const toggleEmployeeStatus = async (req: Request, res: Response) => {
       );
     }
 
-    employee.employee_status = employee.employee_status === "Active" ? "Inactive" : "Active";
+    employee.employee_status =
+      employee.employee_status === "Active" ? "Inactive" : "Active";
     await employee.save();
 
     sendSuccessResponse(

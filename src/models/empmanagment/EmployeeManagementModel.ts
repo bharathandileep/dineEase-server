@@ -9,7 +9,7 @@ export interface IEmployeeManagement extends Document, CommonDBInterface {
   username: string;
   email: string;
   phone_number: string;
-  address: mongoose.Types.ObjectId;
+  address_id: mongoose.Types.ObjectId;
   role: string;
   employee_status: string;
   aadhar_number: string;
@@ -36,12 +36,14 @@ export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone_number: { type: String, required: true },
-    address: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-
-    },
-    role: { type: String},
+    address_id: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
+        required: true,
+      },
+    ],
+    role: { type: String },
     employee_status: { type: String, required: true },
     aadhar_number: { type: String, required: true },
     pan_number: { type: String, required: true },
