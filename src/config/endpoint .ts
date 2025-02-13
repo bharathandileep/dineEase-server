@@ -54,6 +54,15 @@ export const apiConfig = {
     updateSubcategory: "/subcategories/:id",
     deleteSubcategory: "/subcategories/:id",
     toggleSubcategoryStatus: "/subcategories/:id/toggle-status",
+
+  createItem:"/allmenuitems",
+    getItemById:"/allmenuitems/:id",
+    listItems:"/allmenuitems",
+    updateItem:"/allmenuitems/:id",
+    deleteItem:"/allmenuitems/:id",
+    // changeItemStatus:"/allmenuitems/:id/status"
+    changeItemStatus:"/allmenuitems/:id/status"
+
   },
   organization: {
     newOrganization: "/new",

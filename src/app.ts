@@ -14,7 +14,7 @@ import kitchensRoute from "./routes/kitchen/kitchensRoutes";
 import organizationRoute from "./routes/organizationRoute";
 import menuCategoryRoutes from "./routes/kitchen/categoryRoutes";
 import menuSubCategoryRoutes from "./routes/kitchen/subcategoryRoutes";
-
+import menuitemsRoutes from "./routes/menuitems/menuitemsRoutes"
 export const app: Application = Express();
 
 app.use(Express.json());
@@ -29,6 +29,7 @@ app.use(`${apiConfig.baseAPIUrl}/kitchens`, kitchensRoute);
 app.use(`${apiConfig.baseAPIUrl}/menu-category`, menuCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/sub-menu-category`, menuSubCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
+app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
 
 
 // Health check route
