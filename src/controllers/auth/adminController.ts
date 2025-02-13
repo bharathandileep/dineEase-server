@@ -67,9 +67,9 @@ export const handleRegisterAdmin = async (req: Request, res: Response) => {
 
 export const handleAdminLogin = async (req: Request, res: Response) => {
   try {
-    const { userName, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!userName || !password) {
+    if (!username || !password) {
       throw new CustomError(
         "user name and password are required",
         HTTP_STATUS_CODE.BAD_REQUEST,
@@ -78,7 +78,7 @@ export const handleAdminLogin = async (req: Request, res: Response) => {
       );
     }
 
-    const admin = await Admin.findOne({ userName });
+    const admin = await Admin.findOne({ username });
     if (!admin) {
       throw new CustomError(
         `Invalid credential`,

@@ -9,7 +9,7 @@ import {
   updateSubcategory,
 } from "../../controllers/kitchens/menuSubCategory";
 import { apiConfig } from "../../config/endpoint ";
-
+import { kitchenToggleSubcategoryStatus } from "../../controllers/kitchens/kitchenSubCategory";
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.put(`${apiConfig.menu.updateSubcategory}`, updateSubcategory);
 router.delete(`${apiConfig.menu.deleteSubcategory}`, deleteSubcategory);
 router.patch(
   `${apiConfig.menu.toggleSubcategoryStatus}`,
-  toggleSubcategoryStatus
+  kitchenToggleSubcategoryStatus
 );
 router.get(`${apiConfig.menu.getAllSubCategories}`, getAllSubCategories);
 router.get(
@@ -32,4 +32,3 @@ router.get(
 );
 
 export default router;
-
