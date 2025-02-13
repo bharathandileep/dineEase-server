@@ -14,6 +14,8 @@ import kitchensRoute from "./routes/kitchen/kitchensRoutes";
 import organizationRoute from "./routes/organization/organizationRoute";
 import menuCategoryRoutes from "./routes/kitchen/categoryRoutes";
 import menuSubCategoryRoutes from "./routes/kitchen/subcategoryRoutes";
+import designationRoutes from "./routes/designation/designationRoutes"
+import EmployeeManagementRoutes from "./routes/empmanagment/EmployeeManagementRoutes";
 
 export const app: Application = Express();
 
@@ -27,6 +29,8 @@ app.use(`${apiConfig.baseAPIUrl}/kitchens`, kitchensRoute);
 app.use(`${apiConfig.baseAPIUrl}/menu-category`, menuCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/sub-menu-category`, menuSubCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
+app.use(`${apiConfig.baseAPIUrl}/designation`, designationRoutes);
+app.use(`${apiConfig.baseAPIUrl}/employee`, EmployeeManagementRoutes);
 
 // Health check route
 app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {

@@ -217,7 +217,7 @@ export const handleGetKitchensById = async (
           from: "addresses",
           localField: "address_id",
           foreignField: "_id",
-          as: "addresses",
+          as: "addresses",  
         },
       },
       {

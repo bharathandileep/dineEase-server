@@ -1,14 +1,13 @@
 import mongoose, { Model } from "mongoose";
 import Address from "../../models/address/AddressModel";
 
-
-
 export const createAddressAndUpdateModel = async (
   model: Model<any>,
   modelId: any,
   addressDetails: any
 ): Promise<void> => {
   try {
+    console.log(addressDetails);
     const newAddress = new Address(addressDetails);
     const savedAddress = await newAddress.save();
     await model.findByIdAndUpdate(modelId, {
@@ -26,6 +25,7 @@ export const updateAddress = async (
   modelId: any,
   addressData: any
 ) => {
+  console.log(addressData);
   const organization = await model.findById(modelId);
   if (!organization || !organization.address_id?.length) {
     return null;
@@ -50,4 +50,3 @@ export const updateAddress = async (
     })
   );
 };
-  
