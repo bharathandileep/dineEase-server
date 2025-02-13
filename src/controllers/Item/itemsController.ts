@@ -7,10 +7,6 @@ import { sendErrorResponse, sendSuccessResponse } from '../../lib/helpers/respon
 import { uploadFileToCloudinary } from '../../lib/utils/cloudFileManager';
 import mongoose from 'mongoose';
 
-// import { Item, IItem } from './';
-
-// Create a new item
-
 
 export const createItem = async (req: Request, res: Response) => {
     try {
@@ -69,11 +65,6 @@ export const createItem = async (req: Request, res: Response) => {
       );
     }
   };
-
-
-
-
-
 
 // List all items
 export const listItems = async (req: Request, res: Response) => {

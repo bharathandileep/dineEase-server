@@ -17,6 +17,9 @@ import {
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
 
+
+
+
 // Get all employees
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
@@ -69,12 +72,12 @@ export const createEmployee = async (req: Request, res: Response) => {
       phone_number,
       city,
       state,
-      district = "", // Ensure a value exists
+      district = "",
       pincode,
       country,
-      street_address, // Fix field name to match frontend
-      role = "Employee", // Default role
-      employee_status = "Active", // Default status
+      street_address, 
+      role = "Employee", 
+      employee_status = "Active", 
       aadhar_number,
       pan_number,
     } = req.body;

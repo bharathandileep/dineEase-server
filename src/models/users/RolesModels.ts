@@ -15,7 +15,6 @@ export const RoleSchema: Schema = new Schema<IRole>(
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     permission: { type: Number, required: true, default: 0 },
   },
