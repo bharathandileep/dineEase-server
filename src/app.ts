@@ -16,7 +16,7 @@ import menuCategoryRoutes from "./routes/kitchen/categoryRoutes";
 import menuSubCategoryRoutes from "./routes/kitchen/subcategoryRoutes";
 import designationRoutes from "./routes/designation/designationRoutes"
 import EmployeeManagementRoutes from "./routes/empmanagment/EmployeeManagementRoutes";
-
+import menuitemsRoutes from "./routes/menuitems/menuitemsRoutes"
 export const app: Application = Express();
 
 app.use(Express.json());
@@ -31,6 +31,8 @@ app.use(`${apiConfig.baseAPIUrl}/sub-menu-category`, menuSubCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
 app.use(`${apiConfig.baseAPIUrl}/designation`, designationRoutes);
 app.use(`${apiConfig.baseAPIUrl}/employee`, EmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
+
 
 // Health check route
 app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {
