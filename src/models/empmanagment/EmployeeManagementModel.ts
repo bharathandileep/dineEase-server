@@ -15,6 +15,7 @@ export interface IEmployeeManagement extends Document, CommonDBInterface {
   aadhar_number: string;
   pan_number: string;
   profile_picture: string;
+
 }
 export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
   {

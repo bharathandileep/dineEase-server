@@ -18,7 +18,7 @@ import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
 
 // Get all employees
-export const getAllEmployees = async (req: Request, res: Response) => {
+export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
   try {
     const employees = await EmployeeManagement.aggregate([
       { $match: { is_deleted: false } },
@@ -58,11 +58,11 @@ export const getAllEmployees = async (req: Request, res: Response) => {
 };
 
 // Create new employee
-export const createEmployee = async (req: Request, res: Response) => {
+export const createOrgEmployee = async (req: Request, res: Response) => {
   try {
     const {
       entity_id,
-      entity_type,
+      entity_type = "Organization",
       designation,
       username,
       email,
@@ -168,7 +168,7 @@ export const createEmployee = async (req: Request, res: Response) => {
   }
 };
 
-export const getEmployeeById = async (req: Request, res: Response) => {
+export const getOrgEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     validateMogooseObjectId(id);
@@ -236,7 +236,7 @@ export const getEmployeeById = async (req: Request, res: Response) => {
 };
 
 // Update employee
-export const updateEmployee = async (req: Request, res: Response) => {
+export const updateOrgEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
@@ -333,7 +333,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
 };
 
 // Toggle employee status
-export const toggleEmployeeStatus = async (req: Request, res: Response) => {
+export const toggleOrgEmployeeStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     validateMogooseObjectId(id);
@@ -369,7 +369,7 @@ export const toggleEmployeeStatus = async (req: Request, res: Response) => {
 };
 
 // Soft delete employee
-export const deleteEmployee = async (req: Request, res: Response) => {
+export const deleteOrgEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     validateMogooseObjectId(id);
