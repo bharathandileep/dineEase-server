@@ -16,7 +16,10 @@ router.get(`${apiConfig.employee.getAllEmployees}`,
   upload.fields([
     { name: "profile_picture", maxCount: 1 },
   ]), getAllEmployees);
-router.get(`${apiConfig.employee.getEmployeeById}`, getEmployeeById);
+router.get(`${apiConfig.employee.getEmployeeById}`, 
+  upload.fields([
+    { name: "profile_picture", maxCount: 1 },
+  ]), getEmployeeById);
 router.post(`${apiConfig.employee.createEmployee}`, 
   upload.fields([
     { name: "profile_picture", maxCount: 1 },
