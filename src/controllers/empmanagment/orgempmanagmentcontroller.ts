@@ -7,7 +7,6 @@ import {
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
-import EmployeeManagement from "../../models/empmanagment/EmployeeManagementModel";
 import Designation from "../../models/designation/designationModel";
 import Address from "../../models/address/AddressModel";
 import {
@@ -16,11 +15,13 @@ import {
 } from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
+import OrgEmployeeManagement from "../../models/empmanagment/OrgEmployeeManagementModel";
+import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
 
 // Get all employees
 export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
   try {
-    const employees = await EmployeeManagement.aggregate([
+    const orgemployees = await OrgEmployeeManagement.aggregate([
       { $match: { is_deleted: false } },
       {
         $lookup: {
@@ -44,7 +45,7 @@ export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
     sendSuccessResponse(
       res,
       "Employees retrieved successfully",
-      employees,
+      orgemployees,
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -69,18 +70,18 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       phone_number,
       city,
       state,
-      district = "", // Ensure a value exists
+      district = "",
       pincode,
       country,
-      street_address, // Fix field name to match frontend
-      role = "", // Default role
-      employee_status = "Active", // Default status
+      street_address,
+      role = "",
+      employee_status = "Active",
       aadhar_number,
       pan_number,
     } = req.body;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    // Validation: Ensure all required fields exist
+
     if (
       !entity_id ||
       !entity_type ||
@@ -101,8 +102,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
     }
 
     validateMogooseObjectId(entity_id);
-    // validateMogooseObjectId(designation);
-    console.log("hii");
+
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
@@ -113,7 +113,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       );
     }
 
-    const existingEmployee = await EmployeeManagement.findOne({ email });
+    const existingEmployee = await OrgEmployeeManagement.findOne({ email });
     if (existingEmployee) {
       throw new CustomError(
         "Employee with this email already exists",
@@ -122,11 +122,18 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
         false
       );
     }
+
     const profile_picture = await uploadFileToCloudinary(
       files.profile_picture[0].buffer
     );
-    // Create new employee
-    const newEmployee = new EmployeeManagement({
+    const pan_image = await uploadFileToCloudinary(
+      files.pan_image[0].buffer
+    );
+    const aadhar_image = await uploadFileToCloudinary(
+      files.aadhar_image[0].buffer
+    );
+
+    const newEmployee = new OrgEmployeeManagement({
       entity_id,
       entity_type,
       designation,
@@ -138,19 +145,31 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       aadhar_number,
       pan_number,
       profile_picture,
+      pan_image,
+      aadhar_image,
     });
 
     const empDetails = await newEmployee.save();
-    console.log(empDetails);
-    // Ensure district and streetAddress are correctly structured
-    await createAddressAndUpdateModel(EmployeeManagement, empDetails._id, {
-      street_address, // Match with frontend
+
+    await createAddressAndUpdateModel(OrgEmployeeManagement, empDetails._id, {
+      street_address,
       city,
       state,
       district,
       pincode,
       country,
     });
+
+    // Send email notification
+    const emailResponse = await sendEmployeeCreationEmail(
+      email,
+      username,
+      existingDesignation.designation_name
+    );
+
+    if (!emailResponse.success) {
+      console.error("Error sending email:", emailResponse.error);
+    }
 
     sendSuccessResponse(
       res,
@@ -168,12 +187,13 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
   }
 };
 
+
 export const getOrgEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     validateMogooseObjectId(id);
 
-    const employee = await EmployeeManagement.aggregate([
+    const orgemployees = await OrgEmployeeManagement.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(id),
@@ -210,7 +230,7 @@ export const getOrgEmployeeById = async (req: Request, res: Response) => {
       },
     ]);
 
-    if (!employee || employee.length === 0) {
+    if (!orgemployees || orgemployees.length === 0) {
       throw new CustomError(
         "Employee not found",
         HTTP_STATUS_CODE.NOT_FOUND,
@@ -222,7 +242,7 @@ export const getOrgEmployeeById = async (req: Request, res: Response) => {
     sendSuccessResponse(
       res,
       "Employee retrieved successfully",
-      employee[0], // Accessing the first element since aggregate returns an array
+      orgemployees[0], // Accessing the first element since aggregate returns an array
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -261,7 +281,7 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
     }
 
     // Fetch the existing employee
-    const existingEmployee = await EmployeeManagement.findById(id);
+    const existingEmployee = await OrgEmployeeManagement.findById(id);
     if (!existingEmployee || existingEmployee.is_deleted) {
       throw new CustomError(
         "Employee not found",
@@ -278,6 +298,18 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
       );
       updateData.profile_picture = profile_picture;
     }
+    if (files && files.pan_image) {
+      const pan_image = await uploadFileToCloudinary(
+        files.pan_image[0].buffer
+      );
+      updateData.pan_image = pan_image;
+    }
+    if (files && files.aadhar_image) {
+      const aadhar_image = await uploadFileToCloudinary(
+        files.aadhar_image[0].buffer
+      );
+      updateData.aadhar_image = aadhar_image;
+    }
 
     // Update address fields (if provided)
     if (
@@ -288,7 +320,7 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
       updateData.pincode ||
       updateData.country
     ) {
-      await updateAddress(EmployeeManagement, id, {
+      await updateAddress(OrgEmployeeManagement, id, {
         street_address: updateData.street_address,
         city: updateData.city,
         state: updateData.state,
@@ -299,7 +331,7 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
     }
 
     // Update employee details
-    const updatedEmployee = await EmployeeManagement.findByIdAndUpdate(
+    const updatedEmployee = await OrgEmployeeManagement.findByIdAndUpdate(
       id,
       updateData,
       { new: true }
@@ -338,8 +370,8 @@ export const toggleOrgEmployeeStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     validateMogooseObjectId(id);
 
-    const employee = await EmployeeManagement.findById(id);
-    if (!employee) {
+    const orgemployees = await OrgEmployeeManagement.findById(id);
+    if (!orgemployees) {
       throw new CustomError(
         "Employee not found",
         HTTP_STATUS_CODE.NOT_FOUND,
@@ -348,14 +380,14 @@ export const toggleOrgEmployeeStatus = async (req: Request, res: Response) => {
       );
     }
 
-    employee.employee_status =
-      employee.employee_status === "Active" ? "Inactive" : "Active";
-    await employee.save();
+    orgemployees.employee_status =
+    orgemployees.employee_status === "Active" ? "Inactive" : "Active";
+    await orgemployees.save();
 
     sendSuccessResponse(
       res,
-      `Employee status changed to ${employee.employee_status}`,
-      employee,
+      `Employee status changed to ${orgemployees.employee_status}`,
+      orgemployees,
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -374,8 +406,8 @@ export const deleteOrgEmployee = async (req: Request, res: Response) => {
     const { id } = req.params;
     validateMogooseObjectId(id);
 
-    const employee = await EmployeeManagement.findById(id);
-    if (!employee) {
+    const orgemployees = await OrgEmployeeManagement.findById(id);
+    if (!orgemployees) {
       throw new CustomError(
         "Employee not found",
         HTTP_STATUS_CODE.NOT_FOUND,
@@ -384,8 +416,8 @@ export const deleteOrgEmployee = async (req: Request, res: Response) => {
       );
     }
 
-    employee.is_deleted = true;
-    await employee.save();
+    orgemployees.is_deleted = true;
+    await orgemployees.save();
 
     sendSuccessResponse(
       res,

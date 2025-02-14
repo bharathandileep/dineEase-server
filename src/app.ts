@@ -33,7 +33,7 @@ app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
 app.use(`${apiConfig.baseAPIUrl}/designation`, designationRoutes);
 app.use(`${apiConfig.baseAPIUrl}/employee`, EmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
-app.use(`${apiConfig.baseAPIUrl}/orgemployee`,OrgEmployeeManagementRoutes)
+app.use(`${apiConfig.baseAPIUrl}/org-employee`,OrgEmployeeManagementRoutes)
 
 
 // Health check route

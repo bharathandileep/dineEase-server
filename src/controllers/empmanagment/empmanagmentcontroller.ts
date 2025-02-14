@@ -105,7 +105,7 @@ export const createEmployee = async (req: Request, res: Response) => {
 
     validateMogooseObjectId(entity_id);
     // validateMogooseObjectId(designation);
-    console.log("hii");
+
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
@@ -128,6 +128,12 @@ export const createEmployee = async (req: Request, res: Response) => {
     const profile_picture = await uploadFileToCloudinary(
       files.profile_picture[0].buffer
     );
+    const pan_image = await uploadFileToCloudinary(
+      files.pan_image[0].buffer
+    );
+    const aadhar_image = await uploadFileToCloudinary(
+      files.aadhar_image[0].buffer
+    );
     // Create new employee
     const newEmployee = new EmployeeManagement({
       entity_id,
@@ -141,6 +147,9 @@ export const createEmployee = async (req: Request, res: Response) => {
       aadhar_number,
       pan_number,
       profile_picture,
+      pan_image,
+      aadhar_image
+
     });
 
     const empDetails = await newEmployee.save();
@@ -281,6 +290,19 @@ export const updateEmployee = async (req: Request, res: Response) => {
       );
       updateData.profile_picture = profile_picture;
     }
+    if (files && files.pan_image) {
+      const pan_image = await uploadFileToCloudinary(
+        files.pan_image[0].buffer
+      );
+      updateData.pan_image = pan_image;
+    }
+    if (files && files.aadhar_image) {
+      const aadhar_image = await uploadFileToCloudinary(
+        files.aadhar_image[0].buffer
+      );
+      updateData.aadhar_image = aadhar_image;
+    }
+ 
 
     // Update address fields (if provided)
     if (
