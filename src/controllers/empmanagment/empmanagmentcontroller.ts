@@ -105,7 +105,6 @@ export const createEmployee = async (req: Request, res: Response) => {
 
     validateMogooseObjectId(entity_id);
     // validateMogooseObjectId(designation);
-    console.log("hii");
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
