@@ -48,7 +48,7 @@ app.use(`${apiConfig.baseAPIUrl}/org-employee`,OrgEmployeeManagementRoutes)
 
 // Health check route
 app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {
-  sendSuccessResponse(
+  sendSuccessResponse( 
     res,
     "The server is up and running. All systems are operational."
   );
