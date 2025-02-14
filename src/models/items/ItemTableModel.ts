@@ -4,24 +4,30 @@ import { CommonDBInterface } from '../../lib/interfaces/DBinterfaces';
 
 export interface IItem extends Document,CommonDBInterface {
     item_name: string;          
-    food_category: string;     
-    category: string;          
-    availability: boolean;     
+    category: mongoose.Schema.Types.ObjectId;     
+    subcategory: mongoose.Schema.Types.ObjectId;          
+    status: boolean;     
     item_image: string;         
     item_description: string;   
-    item_price: number;         
-              
-
-  }
+            
+     }
   export const ItemSchema: Schema = new Schema<IItem>(
     {
       item_name: { type: String, required: true }, 
-      food_category: { type: String, required: true }, 
-      category: { type: String, required: true, enum: ['Veg', 'Non-Veg'] }, 
-      availability: { type: Boolean, required: true, default: true }, 
+      category: { 
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"MenuCategory",
+        required:true,
+      }, 
+      subcategory: { 
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"MenuSubcategory",
+        required:true,
+       }, 
+      status: { type: Boolean, required: true, default: true }, 
       item_image: { type: String, default: null }, 
       item_description: { type: String, required: true }, 
-      item_price: { type: Number, required: true }, 
+       
       is_deleted: { 
         type: Boolean, 
         default: false 

@@ -10,7 +10,7 @@ import { generateAndEmailOtp } from "../../lib/utils/generateAndEmailOtp";
 import { validateOtp } from "../../lib/utils/otpValidator";
 import User from "../../models/users/UserModel";
 import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
-import { generateJWTToken } from "../../lib/helpers/generateJWTToken";
+import { generateJWTToken } from "../../lib/helpers/JWTToken";
 import {
   accessTokenExpiration,
   accessTokenSecret,
@@ -189,7 +189,7 @@ export const handleLoginOtpVerification = async (
       );
     }
     await validateOtp(email, otp);
-    return sendSuccessResponse(
+    sendSuccessResponse(
       res,
       "Great! Your email address has been successfully verified.",
       null,
@@ -206,6 +206,34 @@ export const handleLoginOtpVerification = async (
 };
 
 export const handlePhoneRegistration = (req: Request, res: Response) => {};
+
+export const handleGenerateAccessToken = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { payload } = req.body;
+    const { iat, exp, ...cleanedPayload } = payload;
+    const accessToken = generateJWTToken(
+      accessTokenSecret,
+      cleanedPayload,
+      accessTokenExpiration
+    );
+    sendSuccessResponse(
+      res,
+      "Created new token",
+      accessToken,
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
 
 // note to change
 // make a single function that can generate and send otp

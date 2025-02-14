@@ -1,7 +1,7 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { CommonDBInterface } from "../../lib/interfaces/DBinterfaces";
 
-export interface IEmployeeManagement extends Document, CommonDBInterface {
+export interface IOrgEmployeeManagement extends Document, CommonDBInterface {
   entity_id: mongoose.Types.ObjectId;
   employee_id: mongoose.Types.ObjectId;
   designation: mongoose.Types.ObjectId;
@@ -17,11 +17,10 @@ export interface IEmployeeManagement extends Document, CommonDBInterface {
   profile_picture: string;
   pan_image: string;
   aadhar_image: string;
- 
-
 
 }
-export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
+export const     OrgEmployeeManagementSchema
+: Schema = new Schema<IOrgEmployeeManagement>(
   {
     entity_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -51,10 +50,10 @@ export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
     role: { type: String },
     employee_status: { type: String, required: true },
     aadhar_number: { type: String, required: true },
-    pan_image: { type: String, default: null },
     pan_number: { type: String, required: true },
+    pan_image: { type: String, default: null },
+    aadhar_image: { type: String, required: true },
     profile_picture: { type: String, default: null },
-    aadhar_image: { type: String, default: null },
     is_deleted: {
       type: Boolean,
       default: false,
@@ -63,9 +62,9 @@ export const EmployeeManagementSchema: Schema = new Schema<IEmployeeManagement>(
   { timestamps: true }
 );
 
-const EmployeeManagement: Model<IEmployeeManagement> =
-  mongoose.model<IEmployeeManagement>(
-    "EmployeeManagement",
-    EmployeeManagementSchema
+const OrgEmployeeManagement: Model<IOrgEmployeeManagement> =
+  mongoose.model<IOrgEmployeeManagement>(
+    "OrgEmployeeManagement",
+    OrgEmployeeManagementSchema
   );
-export default EmployeeManagement;
+export default OrgEmployeeManagement;

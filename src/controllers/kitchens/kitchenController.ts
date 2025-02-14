@@ -8,12 +8,19 @@ import { ERROR_TYPES } from "../../lib/constants/errorType";
 import Kitchen from "../../models/kitchen/KitchenModel";
 import mongoose from "mongoose";
 import { CustomError } from "../../lib/errors/customError";
-import { createAddressAndUpdateModel, updateAddress } from "../../lib/helpers/addressUpdater";
+import {
+  createAddressAndUpdateModel,
+  updateAddress,
+} from "../../lib/helpers/addressUpdater";
 import PanCardDetails from "../../models/documentations/PanModel";
 import GstCertificateDetails from "../../models/documentations/GstModel";
 import FssaiCertificateDetails from "../../models/documentations/FfsaiModel";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
+
+
+
+
 
 export const handleCreateNewKitchens = async (
   req: Request,
@@ -132,7 +139,7 @@ export const handleGetKitchens = async (
   try {
     // Pagination parameters
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const limit = parseInt(req.query.limit as string) || 4;
     const skip = (page - 1) * limit;
 
     // Optional filters
@@ -168,7 +175,9 @@ export const handleGetKitchens = async (
         },
       },
     ]);
+
     const totalKitchens = await Kitchen.countDocuments(matchQuery);
+
     sendSuccessResponse(
       res,
       "Kitchens retrieved successfully!",
@@ -210,7 +219,7 @@ export const handleGetKitchensById = async (
           from: "addresses",
           localField: "address_id",
           foreignField: "_id",
-          as: "addresses",
+          as: "addresses",  
         },
       },
       {
@@ -311,7 +320,7 @@ export const handleUpdateKitchensById = async (
   res: Response
 ): Promise<void> => {
   try {
-    const  kitchenId = req.params.id;
+    const kitchenId = req.params.id;
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const {
       kitchen_name,
@@ -336,11 +345,12 @@ export const handleUpdateKitchensById = async (
       ffsai_certificate_number,
       ffsai_card_owner_name,
       ffsai_expiry_date,
+      pan_card_image,
+      gst_certificate_image,
+      ffsai_certificate_image,
     } = req.body;
 
-    
     validateMogooseObjectId(kitchenId);
-
     const existingKitchen = await Kitchen.findOne({
       _id: kitchenId,
       is_deleted: false,
@@ -360,16 +370,15 @@ export const handleUpdateKitchensById = async (
       : existingKitchen.kitchen_image;
     const pan_image = files.pan_card_image
       ? await uploadFileToCloudinary(files.pan_card_image[0].buffer)
-      : null;
+      : pan_card_image;
     const gst_image = files.gst_certificate_image
       ? await uploadFileToCloudinary(files.gst_certificate_image[0].buffer)
-      : null;
+      : gst_certificate_image;
     const fssai_image = files.ffsai_certificate_image
       ? await uploadFileToCloudinary(files.ffsai_certificate_image[0].buffer)
-      : null;
+      : ffsai_certificate_image;
 
-    // Update kitchen basic details
-    const updatedKitchen = await Kitchen.findByIdAndUpdate(
+    await Kitchen.findByIdAndUpdate(
       kitchenId,
       {
         $set: {
@@ -386,18 +395,6 @@ export const handleUpdateKitchensById = async (
       },
       { new: true }
     );
-
-    // Update or create address
-    const addressData = {
-      street_address,
-      district,
-      city,
-      state,
-      pincode,
-      country,
-      address_type,
-      kitchen_id: kitchenId,
-    };
 
     await updateAddress(Kitchen, kitchenId, {
       street_address: street_address,

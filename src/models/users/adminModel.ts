@@ -3,7 +3,7 @@ import { CommonDBInterface } from "../../lib/interfaces/DBinterfaces";
 
 export interface IAdmin extends Document, CommonDBInterface {
   fullName: string;
-  userName: string;
+  username: string;
   email: string;
   profile_photo?: string;
   password: string;
@@ -13,7 +13,7 @@ export interface IAdmin extends Document, CommonDBInterface {
 export const AdminSchema: Schema = new Schema<IAdmin>(
   {
     fullName: { type: String, required: true },
-    userName:{ type: String, required: true },
+    username:{ type: String, required: true },
     email: { type: String, unique: true, sparse: true },
     profile_photo: { type: String, default: null },
     is_deleted: { type: Boolean, default: false },
