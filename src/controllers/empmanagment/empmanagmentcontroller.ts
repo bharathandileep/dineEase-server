@@ -16,6 +16,7 @@ import {
 } from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
+import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
 
 
 
@@ -65,7 +66,7 @@ export const createEmployee = async (req: Request, res: Response) => {
   try {
     const {
       entity_id,
-      entity_type,
+      entity_type = "Organization",
       designation,
       username,
       email,
@@ -75,15 +76,15 @@ export const createEmployee = async (req: Request, res: Response) => {
       district = "",
       pincode,
       country,
-      street_address, // Fix field name to match frontend
-      role = "", // Default role
-      employee_status = "Active", // Default status
+      street_address,
+      role = "",
+      employee_status = "Active",
       aadhar_number,
       pan_number,
     } = req.body;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    // Validation: Ensure all required fields exist
+
     if (
       !entity_id ||
       !entity_type ||
@@ -104,7 +105,6 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
 
     validateMogooseObjectId(entity_id);
-    // validateMogooseObjectId(designation);
 
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
@@ -125,6 +125,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         false
       );
     }
+
     const profile_picture = await uploadFileToCloudinary(
       files.profile_picture[0].buffer
     );
@@ -134,7 +135,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     const aadhar_image = await uploadFileToCloudinary(
       files.aadhar_image[0].buffer
     );
-    // Create new employee
+
     const newEmployee = new EmployeeManagement({
       entity_id,
       entity_type,
@@ -148,21 +149,30 @@ export const createEmployee = async (req: Request, res: Response) => {
       pan_number,
       profile_picture,
       pan_image,
-      aadhar_image
-
+      aadhar_image,
     });
 
     const empDetails = await newEmployee.save();
-    console.log(empDetails);
-    // Ensure district and streetAddress are correctly structured
+
     await createAddressAndUpdateModel(EmployeeManagement, empDetails._id, {
-      street_address, // Match with frontend
+      street_address,
       city,
       state,
       district,
       pincode,
       country,
     });
+
+    // Send email notification
+    const emailResponse = await sendEmployeeCreationEmail(
+      email,
+      username,
+      existingDesignation.designation_name
+    );
+
+    if (!emailResponse.success) {
+      console.error("Error sending email:", emailResponse.error);
+    }
 
     sendSuccessResponse(
       res,
@@ -179,7 +189,6 @@ export const createEmployee = async (req: Request, res: Response) => {
     );
   }
 };
-
 export const getEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
