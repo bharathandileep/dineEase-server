@@ -10,7 +10,6 @@ import {
   sendErrorResponse,
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
-import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 
 export const addMenuItems = async (req: Request, res: Response) => {
