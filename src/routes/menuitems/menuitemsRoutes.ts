@@ -22,7 +22,9 @@ router.post(`${apiConfig.menu.createItem}`,
     ]),
     createItem
 );
-// router.put(`${apiConfig.menu.updateItem}`,updateItem);
+
+
+
 router.put("/allmenuitems/:id", upload.fields([
     {name : "item_image",maxCount:1}
     ]),updateItem);

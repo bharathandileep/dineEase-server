@@ -21,11 +21,14 @@ router.post(
   otpRateLimiter,
   generateRegistrationOtp
 );
+
+
 router.post(`${apiConfig.auth.loginOtp}`, generateLoginOtp);
 router.post(`${apiConfig.auth.verifyOtp}`, handleAuthenticateOtp);
 router.post(`${apiConfig.auth.verifyLoginOtp}`, handleLoginOtpVerification);
 router.post(`${apiConfig.auth.adminRegister}`, handleRegisterAdmin);
 router.post(`${apiConfig.auth.adminLogin}`, handleAdminLogin);
 router.post(`${apiConfig.auth.accessToken}`, refreshTokenMiddleware, handleGenerateAccessToken);
+
 export default router;
  

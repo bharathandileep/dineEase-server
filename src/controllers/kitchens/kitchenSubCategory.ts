@@ -209,7 +209,6 @@ export const kitchenToggleSubcategoryStatus = async (
 ) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const subcategory = await kitchenSubcategory.findById(id).populate<{
       category: any;
     }>("category", "category status");

@@ -262,11 +262,8 @@ export const updateEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Handle file uploads
-    console.log(req.body);
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; 
     validateMogooseObjectId(id);
-
-    // Check if designation exists
     if (updateData.designation) {
       // validateMogooseObjectId(updateData.designation);
       const designationExists = await Designation.findById(

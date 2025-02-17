@@ -110,9 +110,9 @@ export const apiConfig = {
   kitchenMenu: {
     getKitchenMenu: "/kitchen-menu/:kitchenId",
     createkitchenMenu: "/kitchen-menu/:id",
+    getkitchenMenuItemDetail: "/:kitchenId/menu-item/:itemId",
     removekitchenMenu: "/kitchen-menu/:kitchen_id/remove/:item_id",
-    getSubcategoryById: "/kitchen-menu/subcategories/:id",
-    updateSubcategory: "/kitchen-menu/subcategories/:id",
+    updateKitchenMenu: "/:kitchenId/menu-item/:itemId",
     deleteSubcategory: "/kitchen-menu/subcategories/:id",
     toggleSubcategoryStatus: "/kitchen-menu/subcategories/:id/toggle-status",
   },

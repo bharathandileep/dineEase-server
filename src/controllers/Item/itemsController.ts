@@ -123,50 +123,10 @@ export const getItemById = async (req: Request, res: Response) => {
 };
 
 
-
-// export const updateItem = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
-//     console.log("Received ID:", id);
-//     console.log("Received Body:", req.body);
-//     console.log("Received File:", req.file); // Debugging log
-
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//       return sendErrorResponse(res, "Invalid item ID", HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.VALIDATION_ERROR);
-//     }
-
-//     const { item_name, category, subcategory, item_description } = req.body;
-//     let item_image = req.body.item_image; // Keep existing image
-
-//     if (req.file) {
-//       item_image = req.file.filename; // Use new image
-//     }
-
-//     const updatedItem = await Item.findByIdAndUpdate(
-//       id,
-//       { item_name, category, subcategory, item_description, item_image },
-//       { new: true, runValidators: true }
-//     );
-
-//     if (!updatedItem) {
-//       return sendErrorResponse(res, "Failed to update item", HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
-//     }
-
-//     return sendSuccessResponse(res, "Item updated successfully", updatedItem, HTTP_STATUS_CODE.OK);
-//   } catch (error) {
-//     console.error("Error updating item:", error);
-//     return sendErrorResponse(res, "Internal server error", HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
-//   }
-// };
-
 export const updateItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    console.log("Received ID:", id);
-    console.log("Received Body:", req.body);
-    console.log("Received Files:", files); // Debugging log
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendErrorResponse(res, "Invalid item ID", HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.VALIDATION_ERROR);
     }
@@ -182,8 +142,7 @@ export const updateItem = async (req: Request, res: Response) => {
     const item_image = files?.item_image
       ? await uploadFileToCloudinary(files.item_image[0].buffer)
       : existingItem.item_image;
-    console.log(item_image);
-    
+
     const updatedItem = await Item.findByIdAndUpdate(
       id,
       { item_name, category, subcategory, item_description, item_image },

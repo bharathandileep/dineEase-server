@@ -37,7 +37,6 @@ export const orgGetAllSubCategories = async (req: Request, res: Response) => {
 export const orgCreateSubcategory = async (req: Request, res: Response) => {
   try {
     const { category, subcategoryName } = req.body;
-    console.log(req.body);
     if (!category || !subcategoryName) {
       throw new CustomError(
         "Subcategory name and category are required",
