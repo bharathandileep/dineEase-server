@@ -189,10 +189,22 @@ export const handleForgotPasswordVerification = async (
       );
     }
 
+    // Generate a new JWT token with a 2-minute expiration
+    const payload = { id: admin._id, email: admin.email, role: admin.role };
+    const token = generateJWTToken(
+      accessTokenSecret,
+      payload,
+      '2m'  // Token expires in 2 minutes
+    );
+
+    // Store the token in the admin document
+    admin.authToken = token;
+    await admin.save();
+
     return sendSuccessResponse(
       res,
       "OTP successfully verified. You can now reset your password.",
-      null,
+      { token },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -210,18 +222,8 @@ export const handleUpdatePassword = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { email, newPassword, confirmPassword } = req.body;
-
-    // Check if newPassword and confirmPassword match
-    if (newPassword !== confirmPassword) {
-      throw new CustomError(
-        "The new password and confirm password do not match.",
-        HTTP_STATUS_CODE.BAD_REQUEST,
-        ERROR_TYPES.BAD_REQUEST_ERROR,
-        false
-      );
-    }
-
+    const { email, newPassword } = req.body;
+    
     // Validate the new password (optional: add password strength validation)
     if (newPassword.length < 6) {
       throw new CustomError(
@@ -231,7 +233,7 @@ export const handleUpdatePassword = async (
         false
       );
     }
-     const hashedPassword = await hashPassword(newPassword);
+    const hashedPassword = await hashPassword(newPassword);
     let admin = await Admin.findOne({ email });
     if (!admin) {
       throw new CustomError(
@@ -242,16 +244,26 @@ export const handleUpdatePassword = async (
       );
     }
 
-    
-
     // Update the admin's password
     admin.password = hashedPassword;
+    await admin.save();
+
+    // Generate a new JWT token with a 2-minute expiration
+    const payload = { id: admin._id, email: admin.email, role: admin.role };
+    const token = generateJWTToken(
+      accessTokenSecret,
+      payload,
+      '2m'  // Token expires in 2 minutes
+    );
+
+    // Store the new token in the authToken field
+    admin.authToken = token;
     await admin.save();
 
     return sendSuccessResponse(
       res,
       "Your password has been updated successfully.",
-      null,
+      { token },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
