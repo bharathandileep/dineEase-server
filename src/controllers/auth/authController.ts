@@ -32,9 +32,10 @@ export const handleGoogleAuth = async (
       await user.save();
     }
     const payload = {
+      id: user._id,
       email: user.email,
       fullName: user.fullName,
-      profileImg: user.profile_photo,
+      role: "User",
     };
     appendRefreshTokenCookies(res, payload);
     const accessToken = generateJWTToken(
@@ -46,7 +47,12 @@ export const handleGoogleAuth = async (
       ? "Welcome! Your account has been created successfully."
       : "User logged in successfully.";
 
-    return sendSuccessResponse(res, message, accessToken, HTTP_STATUS_CODE.OK);
+    return sendSuccessResponse(
+      res,
+      message,
+      { token: accessToken },
+      HTTP_STATUS_CODE.OK
+    );
   } catch (error) {
     sendErrorResponse(
       res,
@@ -157,10 +163,23 @@ export const handleAuthenticateOtp = async (
         false
       );
     }
+    let user = await User.findOne({ email });
+    const payload = {
+      id: user?._id,
+      email: user?.email,
+      fullName: user?.fullName,
+      role: "User",
+    };
+    appendRefreshTokenCookies(res, payload);
+    const accessToken = generateJWTToken(
+      accessTokenSecret,
+      payload,
+      accessTokenExpiration
+    );
     return sendSuccessResponse(
       res,
       "Great! Your email address has been successfully verified.",
-      null,
+      { token: accessToken },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -189,10 +208,23 @@ export const handleLoginOtpVerification = async (
       );
     }
     await validateOtp(email, otp);
+    const payload = {
+      id: user._id,
+      email: user.email,
+      fullName: user.fullName,
+      role: "User",
+    };
+    appendRefreshTokenCookies(res, payload);
+    const accessToken = generateJWTToken(
+      accessTokenSecret,
+      payload,
+      accessTokenExpiration
+    );
+
     sendSuccessResponse(
       res,
       "Great! Your email address has been successfully verified.",
-      null,
+      { token: accessToken },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -234,7 +266,3 @@ export const handleGenerateAccessToken = async (
     );
   }
 };
-
-// note to change
-// make a single function that can generate and send otp
-// make sure that db error not to the client (validate fields before db)

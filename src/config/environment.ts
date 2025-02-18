@@ -19,5 +19,5 @@ export const refreshTokenExpiration = "7d";
 
 export const mailId = process.env.AUTH_MAIL_ID;
 export const mailPassword = process.env.AUTH_MAIL_PASSWOERD;
-
+  
 export const clientOrigin = process.env.CLIENT_ORIGIN;

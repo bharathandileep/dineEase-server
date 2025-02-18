@@ -2,12 +2,13 @@ import { mailId, mailPassword } from "../../config/environment";
 import nodemailer from "nodemailer";
 import { generateOtpEmailHtml } from "../views/otpEmailTemplate";
 import { generateOtp } from "./generateOtp";
-import { CustomError } from "../errors/customError";
-import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
-import { ERROR_TYPES } from "../constants/errorType";
 import { hashPassword } from "./generatePasswordHash";
 import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
+
+
+
+
 
 export const generateAndEmailOtp = async (email: string, fullName: string) => {
   const generatedOTP = generateOtp();
@@ -15,7 +16,7 @@ export const generateAndEmailOtp = async (email: string, fullName: string) => {
   const subject = "Your Account Verification Code - Dineeas";
   const text = `Your OTP is: ${generatedOTP}`;
   const html = generateOtpEmailHtml(generatedOTP);
-  
+
   const isMailSend = await sendEmail({ email, subject, html, text });
   try {
     const hashedOtp = await hashPassword(generatedOTP);

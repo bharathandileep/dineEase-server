@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import {
   sendErrorResponse,
   sendSuccessResponse,
@@ -12,7 +13,7 @@ import {
 } from "../../lib/helpers/generatePasswordHash";
 import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
 import { generateJWTToken } from "../../lib/helpers/JWTToken";
-import {
+import { 
   accessTokenExpiration,
   accessTokenSecret,
 } from "../../config/environment";
