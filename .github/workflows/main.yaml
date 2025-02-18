@@ -79,5 +79,6 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /var/www/backend/
+          npm i
           npm run build
           
