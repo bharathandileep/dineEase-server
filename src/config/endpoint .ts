@@ -1,5 +1,3 @@
-import { port } from "./environment";
-
 export const apiConfig = {
   baseAPIUrl: `/api/v1`,
   auth: {
@@ -12,6 +10,9 @@ export const apiConfig = {
     adminLogin: "/admin/login",
     adminRegister: "/admin/register",
     accessToken: "/new/access-token",
+    forgotPassword: "/admin/forgot-password",
+    verifyForgotOtp: "/admin/verify-password",
+    updatePassword: "/admin/update-password",
   },
   users: {
     getUser: "/users/:id",
@@ -55,14 +56,13 @@ export const apiConfig = {
     deleteSubcategory: "/subcategories/:id",
     toggleSubcategoryStatus: "/subcategories/:id/toggle-status",
 
-  createItem:"/allmenuitems",
-    getItemById:"/allmenuitems/:id",
-    listItems:"/allmenuitems",
-    updateItem:"/allmenuitems/:id",
-    deleteItem:"/allmenuitems/:id",
+    createItem: "/allmenuitems",
+    getItemById: "/allmenuitems/:id",
+    listItems: "/allmenuitems",
+    updateItem: "/allmenuitems/:id",
+    deleteItem: "/allmenuitems/:id",
     // changeItemStatus:"/allmenuitems/:id/status"
-    changeItemStatus:"/allmenuitems/:id/status"
-
+    changeItemStatus: "/allmenuitems/:id/status",
   },
   organization: {
     newOrganization: "/new",
@@ -109,6 +109,14 @@ export const apiConfig = {
     updateOrgEmployee: "/orgemployee/:id",
     deleteOrgEmployee: "/orgemployee/:id",
     toggleOrgEmployeeStatus: "/orgemployee/:id/toggle-status",
-  }
-  
+  },
+  kitchenMenu: {
+    getKitchenMenu: "/kitchen-menu/:kitchenId",
+    createkitchenMenu: "/kitchen-menu/:id",
+    removekitchenMenu: "/kitchen-menu/:kitchen_id/remove/:item_id",
+    getSubcategoryById: "/kitchen-menu/subcategories/:id",
+    updateSubcategory: "/kitchen-menu/subcategories/:id",
+    deleteSubcategory: "/kitchen-menu/subcategories/:id",
+    toggleSubcategoryStatus: "/kitchen-menu/subcategories/:id/toggle-status",
+  },
 };

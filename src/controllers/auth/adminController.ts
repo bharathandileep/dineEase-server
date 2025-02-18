@@ -17,10 +17,13 @@ import {
   accessTokenSecret,
 } from "../../config/environment";
 import { CustomError } from "../../lib/errors/customError";
+import { generateAndEmailForgotOtp } from "../../lib/utils/generateAndEmailOtp";
+import { validateForgotOtp, validateOtp } from "../../lib/utils/otpValidator";
+
 
 export const handleRegisterAdmin = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, userName, password } = req.body;
+    const { fullName, email, username, password } = req.body;
 
     if (!fullName || !email || !password) {
       throw new CustomError(
@@ -43,7 +46,7 @@ export const handleRegisterAdmin = async (req: Request, res: Response) => {
     const hashedPassword = await hashPassword(password);
     const newAdmin = new Admin({
       fullName,
-      userName,
+      username,
       email,
       password: hashedPassword,
     });
@@ -109,6 +112,146 @@ export const handleAdminLogin = async (req: Request, res: Response) => {
       res,
       "User logged in successfully.",
       { token: accessToken },
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+export const generateForgotPassOtp = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email } = req.body;
+    let admin = await Admin.findOne({ email });
+    if (!admin) {
+      throw new CustomError(
+        "Email not registered.Please enter a valid email address.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+    const result = await generateAndEmailForgotOtp(admin.email, admin.fullName);
+    if (!result.success) {
+      throw new CustomError(
+        `Failed to send OTP to the email address. Please try again later.`,
+        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+        ERROR_TYPES.SERVER_ERROR,
+        false
+      );
+    }
+    return sendSuccessResponse(
+      res,
+      "Verification code sent successfully to your email address.",
+      { email },
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+export const handleForgotPasswordVerification = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, otp } = req.body;
+    let admin = await Admin.findOne({ email });
+    if (!admin) {
+      throw new CustomError(
+        "Email not registered. Please enter a valid email address.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+
+    // Assuming validateOtp will return the admin details if the OTP is valid
+    const otpVerificationResult = await validateForgotOtp(email, otp);
+    if (!otpVerificationResult) {
+      throw new CustomError(
+        "Invalid OTP. Please try again.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+
+    return sendSuccessResponse(
+      res,
+      "OTP successfully verified. You can now reset your password.",
+      null,
+      HTTP_STATUS_CODE.OK
+    );
+  } catch (error) {
+    sendErrorResponse(
+      res,
+      error,
+      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+    );
+  }
+};
+
+export const handleUpdatePassword = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    // Check if newPassword and confirmPassword match
+    if (newPassword !== confirmPassword) {
+      throw new CustomError(
+        "The new password and confirm password do not match.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+
+    // Validate the new password (optional: add password strength validation)
+    if (newPassword.length < 6) {
+      throw new CustomError(
+        "Password must be at least 6 characters long.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+     const hashedPassword = await hashPassword(newPassword);
+    let admin = await Admin.findOne({ email });
+    if (!admin) {
+      throw new CustomError(
+        "Email not registered. Please enter a valid email address.",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.BAD_REQUEST_ERROR,
+        false
+      );
+    }
+
+    
+
+    // Update the admin's password
+    admin.password = hashedPassword;
+    await admin.save();
+
+    return sendSuccessResponse(
+      res,
+      "Your password has been updated successfully.",
+      null,
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {

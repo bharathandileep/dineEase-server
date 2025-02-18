@@ -15,6 +15,8 @@ import {
   accessTokenExpiration,
   accessTokenSecret,
 } from "../../config/environment";
+import Admin from "../../models/users/adminModel";
+import { hashPassword } from "../../lib/helpers/generatePasswordHash";
 
 export const handleGoogleAuth = async (
   req: Request,
@@ -235,6 +237,5 @@ export const handleGenerateAccessToken = async (
   }
 };
 
-// note to change
-// make a single function that can generate and send otp
-// make sure that db error not to the client (validate fields before db)
+
+
