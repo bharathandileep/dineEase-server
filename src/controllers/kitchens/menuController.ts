@@ -11,6 +11,7 @@ import {
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
+import { Console } from "console";
 
 export const addMenuItems = async (req: Request, res: Response) => {
   try {
@@ -297,8 +298,8 @@ export const updateMenuItem = async (req: Request, res: Response) => {
     const { kitchenId, itemId } = req.params;
     const updatedItemData = req.body;
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    let custom_image = updatedItemData.custom_image; 
-
+    let custom_image = updatedItemData.custom_image;
+    console.log(req.body);
     if (files?.custom_image?.[0]) {
       custom_image = await uploadFileToCloudinary(files.custom_image[0].buffer);
     }
@@ -356,7 +357,7 @@ export const updateMenuItem = async (req: Request, res: Response) => {
       ...existingMenu.items_id[itemIndex],
       ...updatedItemData,
       custom_image,
-      ingredients: updatedIngredients, 
+      ingredients: updatedIngredients,
     };
 
     await existingMenu.save();

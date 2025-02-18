@@ -16,7 +16,7 @@ import {
 } from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
-import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
+import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndEmailOtp";
 
 
 

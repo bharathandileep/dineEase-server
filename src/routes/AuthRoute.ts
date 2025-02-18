@@ -22,7 +22,6 @@ router.post(
   generateRegistrationOtp
 );
 
-
 router.post(`${apiConfig.auth.loginOtp}`, generateLoginOtp);
 router.post(`${apiConfig.auth.verifyOtp}`, handleAuthenticateOtp);
 router.post(`${apiConfig.auth.verifyLoginOtp}`, handleLoginOtpVerification);
