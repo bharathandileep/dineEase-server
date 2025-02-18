@@ -60,7 +60,16 @@ jobs:
         username: "ubuntu"
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          sudo cp /home/ubuntu/secret/backend/.env /var/www/backend/.env     
+          sudo cp /home/ubuntu/secret/backend/.env /var/www/backend/.env
+          
+    - name: Copy firebase File to Deployment Directory
+      uses: appleboy/ssh-action@master
+      with:
+        host: "13.233.245.17"
+        username: "ubuntu"
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          sudo cp /home/ubuntu/secret/backend/FirebaseServiceAccount.json /var/www/backend/src/config/FirebaseServiceAccount.json  
 
     - name: Install Dependencies and Restart Application
       uses: appleboy/ssh-action@master
@@ -70,5 +79,5 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /var/www/backend/
-          npm run dev
+          npm run build
           
