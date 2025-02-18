@@ -70,5 +70,5 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /var/www/backend/
-          npm install
-          # pm2 start react-app
+          npm run dev
+          
