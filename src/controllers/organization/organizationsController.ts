@@ -16,17 +16,55 @@ import GstCertificateDetails from "../../models/documentations/GstModel";
 import mongoose from "mongoose";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
+import OrgCategory from "../../models/organisations/OrgCategory";
+
+const validateOrganizationDetails = (data: any) => {
+  const errors: { field: string; message: string }[] = [];
+
+  // PAN Card Validation
+  if (!data.pan_card_number) {
+    errors.push({ field: "pan_card_number", message: "PAN card number is required." });
+  } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(data.pan_card_number)) {
+    errors.push({ field: "pan_card_number", message: "Invalid PAN card number." });
+  }
+
+  if (!data.pan_card_user_name) {
+    errors.push({ field: "pan_card_user_name", message: "PAN card user name is required." });
+  }
+
+  // GST Validation
+  if (!data.gst_number) {
+    errors.push({ field: "gst_number", message: "GST number is required." });
+  } else if (
+    !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/.test(data.gst_number)
+  ) {
+    errors.push({ field: "gst_number", message: "Invalid GST number." });
+  }
+
+  if (!data.gst_expiry_date) {
+    errors.push({ field: "gst_expiry_date", message: "GST expiry date is required." });
+  }
+return errors;
+};
 
 export const handleCreateNewOrganisation = async (
   req: Request,
   res: Response
 ) => {
-  try {
+    try {
+        const errors = validateOrganizationDetails(req.body);
+        if (errors.length > 0) {
+          return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
+        }
+      
+  
     const {
       organizationName,
       managerName,
       registerNumber,
       contactNumber,
+      category,
+      subcategoryName,
       email,
       numberOfEmployees,
       addressType,
@@ -51,6 +89,9 @@ export const handleCreateNewOrganisation = async (
       user_id: new mongoose.Types.ObjectId(user_id),
       organizationName,
       managerName,
+      category: new mongoose.Types.ObjectId(category),
+      subcategoryName: new mongoose.Types.ObjectId(subcategoryName),
+
       register_number: registerNumber,
       contact_number: contactNumber,
       email,
@@ -140,6 +181,22 @@ export const handleGetOrganisations = async (
         },
       },
       {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategoryName",
+          foreignField: "_id",
+          as: "subcategoryDetails",
+        },
+      },
+      {
         $project: {
           _id: 1,
           organizationName: 1,
@@ -195,6 +252,22 @@ export const handleGetByIdOrganisations = async (
           localField: "address_id",
           foreignField: "_id",
           as: "addresses",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategoryName",
+          foreignField: "_id",
+          as: "subcategoryDetails",
         },
       },
       {
@@ -257,6 +330,11 @@ export const handleUpdateOrganisations = async (
   res: Response
 ) => {
   try {
+        const errors = validateOrganizationDetails(req.body);
+        if (errors.length > 0) {
+          return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
+        }
+        
     const organizationId = req.params.id;
     const organization = await Organization.findById(organizationId);
 
@@ -283,6 +361,8 @@ export const handleUpdateOrganisations = async (
       organizationName: updateData.organizationName,
       managerName: updateData.managerName,
       register_number: updateData.registerNumber,
+      category:updateData.category,
+      subcategoryName:updateData.subcategoryName,
       contact_number: updateData.contactNumber,
       email: updateData.email,
       no_of_employees: Number(updateData.numberOfEmployees),
