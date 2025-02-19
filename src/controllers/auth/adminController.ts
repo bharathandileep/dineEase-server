@@ -11,7 +11,7 @@ import {
   hashPassword,
 } from "../../lib/helpers/generatePasswordHash";
 import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
-import { generateJWTToken } from "../../lib/helpers/JWTToken";
+import { generateJWTToken, verifyToken } from "../../lib/helpers/JWTToken";
 import {
   accessTokenExpiration,
   accessTokenSecret,
@@ -197,10 +197,6 @@ export const handleForgotPasswordVerification = async (
       '2m'  // Token expires in 2 minutes
     );
 
-    // Store the token in the admin document
-    admin.authToken = token;
-    await admin.save();
-
     return sendSuccessResponse(
       res,
       "OTP successfully verified. You can now reset your password.",
@@ -217,15 +213,34 @@ export const handleForgotPasswordVerification = async (
   }
 };
 
-export const handleUpdatePassword = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const handleUpdatePassword = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { email, newPassword } = req.body;
-    
-    // Validate the new password (optional: add password strength validation)
-    if (newPassword.length < 6) {
+    const { email, newPassword, token } = req.body;
+
+    if (!token) {
+      throw new CustomError(
+        "Token is required.",
+        HTTP_STATUS_CODE.UNAUTHORIZED,
+        ERROR_TYPES.VALIDATION_ERROR,
+        false
+      );
+    }
+
+    // Verify the token
+    let tokenPayload;
+    try {
+      tokenPayload = verifyToken(token, accessTokenSecret);
+    } catch (err) {
+      throw new CustomError(
+        "Invalid token.",
+        HTTP_STATUS_CODE.UNAUTHORIZED,
+        ERROR_TYPES.VALIDATION_ERROR,
+        false
+      );
+    }
+
+    // Validate new password
+    if (!newPassword || newPassword.length < 6) {
       throw new CustomError(
         "Password must be at least 6 characters long.",
         HTTP_STATUS_CODE.BAD_REQUEST,
@@ -233,7 +248,8 @@ export const handleUpdatePassword = async (
         false
       );
     }
-    const hashedPassword = await hashPassword(newPassword);
+
+    // Check if user exists
     let admin = await Admin.findOne({ email });
     if (!admin) {
       throw new CustomError(
@@ -244,26 +260,15 @@ export const handleUpdatePassword = async (
       );
     }
 
-    // Update the admin's password
+    // Hash and update password
+    const hashedPassword = await hashPassword(newPassword);
     admin.password = hashedPassword;
-    await admin.save();
-
-    // Generate a new JWT token with a 2-minute expiration
-    const payload = { id: admin._id, email: admin.email, role: admin.role };
-    const token = generateJWTToken(
-      accessTokenSecret,
-      payload,
-      '2m'  // Token expires in 2 minutes
-    );
-
-    // Store the new token in the authToken field
-    admin.authToken = token;
     await admin.save();
 
     return sendSuccessResponse(
       res,
       "Your password has been updated successfully.",
-      { token },
+
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {

@@ -8,7 +8,7 @@ export interface IAdmin extends Document, CommonDBInterface {
   profile_photo?: string;
   password: string;
   role: string;
-  authToken?: string;  // Field to store the JWT token
+
 }
 
 export const AdminSchema: Schema = new Schema<IAdmin>(
@@ -20,7 +20,7 @@ export const AdminSchema: Schema = new Schema<IAdmin>(
     is_deleted: { type: Boolean, default: false },
     password: { type: String, required: true },
     role: { type: String, default: "Admin" },
-    authToken: { type: String, default: null }  // Add this field to store token
+// Add this field to store token
   },
   { timestamps: true }
 );
