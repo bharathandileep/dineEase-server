@@ -18,11 +18,27 @@ import mongoose from "mongoose";
 import OrgEmployeeManagement from "../../models/empmanagment/OrgEmployeeManagementModel";
 import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
 
-// Get all employees
+
 export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
   try {
-    const orgemployees = await OrgEmployeeManagement.aggregate([
-      { $match: { is_deleted: false } },
+   
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 8; 
+    const skip = (page - 1) * limit;
+
+
+    const matchQuery: any = { is_deleted: false };
+    if (req.query.designation) {
+      matchQuery.designation = req.query.designation;
+    }
+    if (req.query.status) {
+      matchQuery.status = req.query.status;
+    }
+
+    const orgEmployees = await OrgEmployeeManagement.aggregate([
+      { $match: matchQuery },
+      { $skip: skip },
+      { $limit: limit },
       {
         $lookup: {
           from: "designations",
@@ -41,11 +57,18 @@ export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
         },
       },
     ]);
-    
+
+    const totalEmployees = await OrgEmployeeManagement.countDocuments(matchQuery);
+
     sendSuccessResponse(
       res,
       "Employees retrieved successfully",
-      orgemployees,
+      {
+        orgEmployees,
+        totalPages: Math.ceil(totalEmployees / limit),
+        currentPage: page,
+        totalEmployees,
+      },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {

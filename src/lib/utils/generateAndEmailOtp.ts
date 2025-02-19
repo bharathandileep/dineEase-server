@@ -9,7 +9,8 @@ import { hashPassword } from "../helpers/generatePasswordHash";
 import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
 import { forgotPassHtml } from "../views/forgotPassTemplate";
-import PasswordReset from "../../models/users/ForgotOtpModel";
+import PasswordReset from "../../models/users/forgotOtpModel";
+
 
 
 export const generateAndEmailOtp = async (email: string, fullName: string) => {

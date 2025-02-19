@@ -24,8 +24,24 @@ import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
 // Get all employees
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
+   
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 8; 
+    const skip = (page - 1) * limit;
+
+
+    const matchQuery: any = { is_deleted: false };
+    if (req.query.designation) {
+      matchQuery.designation = req.query.designation;
+    }
+    if (req.query.status) {
+      matchQuery.status = req.query.status;
+    }
+
     const employees = await EmployeeManagement.aggregate([
-      { $match: { is_deleted: false } },
+      { $match: matchQuery },
+      { $skip: skip },
+      { $limit: limit },
       {
         $lookup: {
           from: "designations",
@@ -45,10 +61,17 @@ export const getAllEmployees = async (req: Request, res: Response) => {
       },
     ]);
     
+    const totalEmployees = await EmployeeManagement.countDocuments(matchQuery);
+
     sendSuccessResponse(
       res,
       "Employees retrieved successfully",
-      employees,
+      {
+        employees,
+        totalPages: Math.ceil(totalEmployees / limit),
+        currentPage: page,
+        totalEmployees,
+      },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {

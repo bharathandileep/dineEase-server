@@ -81,11 +81,23 @@ export const createDesignation = async (req: Request, res: Response) => {
 
 export const getAllDesignations = async (req: Request, res: Response) => {
   try {
-    const designations = await Designation.find();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await Designation.countDocuments({});
+    const designations = await Designation.find().skip(startIndex).limit(limit);
+
+    const pagination = {
+      currentPage: page,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      itemsPerPage: limit,
+    };
+
     sendSuccessResponse(
       res,
       "Designations retrieved successfully",
-      designations,
+      { designations, pagination },
       HTTP_STATUS_CODE.OK
     );
   } catch (error) {
@@ -97,7 +109,6 @@ export const getAllDesignations = async (req: Request, res: Response) => {
     );
   }
 };
-
 export const getDesignationById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

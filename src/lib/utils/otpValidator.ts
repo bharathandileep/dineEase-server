@@ -1,4 +1,5 @@
-import PasswordReset from "../../models/users/ForgotOtpModel";
+
+import PasswordReset from "../../models/users/forgotOtpModel";
 import Otp from "../../models/users/OTPSModel";
 import User from "../../models/users/UserModel";
 import { ERROR_TYPES } from "../constants/errorType";
