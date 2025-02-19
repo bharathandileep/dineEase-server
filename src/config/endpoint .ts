@@ -7,17 +7,16 @@ export const apiConfig = {
     verifyOtp: "/verify-otp",
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
+
     adminLogin: "/admin/login",
     adminRegister: "/admin/register",
     accessToken: "/new/access-token",
     forgotPassword: "/admin/forgot-password",
     verifyForgotOtp: "/admin/verify-password",
     updatePassword: "/admin/update-password",
-  },
-  users: {
-    getUser: "/users/:id",
-    createUser: "/users",
-    updateUser: "/users/:id",
+    
+    userLogins:"/access/login",
+    userRegister:"/access/register"
   },
   kitchens: {
     newkitchens: "/new",

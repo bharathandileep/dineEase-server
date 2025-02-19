@@ -16,7 +16,7 @@ import {
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
 import OrgEmployeeManagement from "../../models/empmanagment/OrgEmployeeManagementModel";
-import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndEmailOtp";
+import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndSendEmail";
 
 // Get all employees
 export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
@@ -159,7 +159,8 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       pincode,
       country,
     });
-
+     
+    
     // Send email notification
     const emailResponse = await sendEmployeeCreationEmail(
       email,

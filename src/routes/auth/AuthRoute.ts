@@ -1,6 +1,6 @@
 import express, { Application } from "express";
-import { apiConfig } from "../config/endpoint ";
-import { verifyFirebaseToken } from "../middleware/verifyFirebaseToken";
+import { apiConfig } from "../../config/endpoint ";
+import { verifyFirebaseToken } from "../../middleware/verifyFirebaseToken";
 import {
   handleAuthenticateOtp,
   handleGoogleAuth,
@@ -8,10 +8,10 @@ import {
   generateLoginOtp,
   handleLoginOtpVerification,
   handleGenerateAccessToken,
-} from "../controllers/auth/authController";
-import { otpRateLimiter } from "../middleware/rateLimiter";
-import { generateForgotPassOtp, handleAdminLogin, handleForgotPasswordVerification, handleRegisterAdmin, handleUpdatePassword } from "../controllers/auth/adminController";
-import { refreshTokenMiddleware } from "../middleware/TokenValidation";
+} from "../../controllers/auth/authController";
+import { otpRateLimiter } from "../../middleware/rateLimiter";
+import { generateForgotPassOtp, handleAdminLogin, handleForgotPasswordVerification, handleRegisterAdmin, handleUpdatePassword } from "../../controllers/auth/adminController";
+import { refreshTokenMiddleware } from "../../middleware/TokenValidation";
 
 
 const router = express.Router();
@@ -22,7 +22,6 @@ router.post(
   otpRateLimiter,
   generateRegistrationOtp
 );
-
 router.post(`${apiConfig.auth.loginOtp}`, generateLoginOtp);
 router.post(`${apiConfig.auth.verifyOtp}`, handleAuthenticateOtp);
 router.post(`${apiConfig.auth.verifyLoginOtp}`, handleLoginOtpVerification);

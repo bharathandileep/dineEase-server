@@ -19,7 +19,7 @@ import {
 } from "../../config/environment";
 import { CustomError } from "../../lib/errors/customError";
 import { validateForgotOtp, validateOtp } from "../../lib/utils/otpValidator";
-import { generateAndEmailForgotOtp } from "../../lib/helpers/generateAndEmailOtp";
+import { generateAndEmailForgotOtp } from "../../lib/helpers/generateAndSendEmail";
 
 
 export const handleRegisterAdmin = async (req: Request, res: Response) => {
@@ -68,7 +68,6 @@ export const handleRegisterAdmin = async (req: Request, res: Response) => {
     );
   }
 };
-
 export const handleAdminLogin = async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
@@ -213,7 +212,6 @@ export const handleForgotPasswordVerification = async (
     );
   }
 };
-
 export const handleUpdatePassword = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, newPassword, token } = req.body;

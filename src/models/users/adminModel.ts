@@ -20,7 +20,6 @@ export const AdminSchema: Schema = new Schema<IAdmin>(
     is_deleted: { type: Boolean, default: false },
     password: { type: String, required: true },
     role: { type: String, default: "Admin" },
-// Add this field to store token
   },
   { timestamps: true }
 );

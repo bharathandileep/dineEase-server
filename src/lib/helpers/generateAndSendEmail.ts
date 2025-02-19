@@ -6,6 +6,7 @@ import { hashPassword } from "./generatePasswordHash";
 import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
 import { forgotPassHtml } from "../views/forgotPassTemplate";
+import { generateWelcomeEmailHtml } from "../views/generateWelcomeEmailHtml";
 import PasswordReset from "../../models/users/ForgotOtpModel";
 
 
@@ -50,9 +51,6 @@ export const generateAndEmailForgotOtp = async (email: string, fullName: string)
     return { success: false, error };
   }
 };
-
-
-
 
 export const sendEmployeeCreationEmail = async (
   email: string,
@@ -121,3 +119,22 @@ export const sendResetPasswordEmail = async (
     return { success: false, error };
   }
 };
+
+export const generateAndSendCredentialsEmail = async (
+  email: string,
+  username: string,
+  password: string
+) => {
+  try {
+    // Email subject and content
+    const subject = "Your Account Credentials - Dineeas";
+    const text = `Hello ${username},\n\nYour account has been created successfully.`;
+    const html = generateWelcomeEmailHtml(username, password);
+    const isMailSent = await sendEmail({ email, subject, html, text });
+    return { success: true, isMailSent };
+  } catch (error) {
+    console.error("Error sending credentials email:", error);
+    return { success: false, error };
+  }
+};
+

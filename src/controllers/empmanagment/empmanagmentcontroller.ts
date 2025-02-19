@@ -16,10 +16,9 @@ import {
 } from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
-import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndEmailOtp";
-
-
-
+import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndSendEmail";
+import Role from "../../models/users/RolesModels";
+import { registerUser } from "../auth/loginsController";
 
 // Get all employees
 export const getAllEmployees = async (req: Request, res: Response) => {
@@ -44,7 +43,7 @@ export const getAllEmployees = async (req: Request, res: Response) => {
         },
       },
     ]);
-    
+
     sendSuccessResponse(
       res,
       "Employees retrieved successfully",
@@ -66,7 +65,7 @@ export const createEmployee = async (req: Request, res: Response) => {
   try {
     const {
       entity_id,
-      entity_type = "Organization",
+      entity_type = "Admin",
       designation,
       username,
       email,
@@ -77,14 +76,12 @@ export const createEmployee = async (req: Request, res: Response) => {
       pincode,
       country,
       street_address,
-      role = "",
       employee_status = "Active",
       aadhar_number,
       pan_number,
     } = req.body;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
     if (
       !entity_id ||
       !entity_type ||
@@ -105,8 +102,8 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
 
     validateMogooseObjectId(entity_id);
-    // validateMogooseObjectId(designation);
 
+    // Fetch Designation
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
@@ -117,6 +114,20 @@ export const createEmployee = async (req: Request, res: Response) => {
       );
     }
 
+    // Fetch Role using the role_name from the Designation
+    const existingRole = await Role.findOne({
+      role_name: existingDesignation.role_name,
+    });
+    if (!existingRole) {
+      throw new CustomError(
+        "Role not found for the given designation",
+        HTTP_STATUS_CODE.NOT_FOUND,
+        ERROR_TYPES.NOT_FOUND_ERROR,
+        false
+      );
+    }
+
+    // Check if employee already exists
     const existingEmployee = await EmployeeManagement.findOne({ email });
     if (existingEmployee) {
       throw new CustomError(
@@ -127,16 +138,18 @@ export const createEmployee = async (req: Request, res: Response) => {
       );
     }
 
+    // Upload files to Cloudinary
     const profile_picture = await uploadFileToCloudinary(
-      files.profile_picture[0].buffer
+      files.profile_picture?.[0]?.buffer
     );
     const pan_image = await uploadFileToCloudinary(
-      files.pan_image[0].buffer
+      files.pan_image?.[0]?.buffer
     );
     const aadhar_image = await uploadFileToCloudinary(
-      files.aadhar_image[0].buffer
+      files.aadhar_image?.[0]?.buffer
     );
 
+    // Create Employee with role_id from the Role model
     const newEmployee = new EmployeeManagement({
       entity_id,
       entity_type,
@@ -144,7 +157,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       username,
       email,
       phone_number,
-      role,
+      role: existingRole.role_id,
       employee_status,
       aadhar_number,
       pan_number,
@@ -163,18 +176,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       pincode,
       country,
     });
-
-    // Send email notification
-    const emailResponse = await sendEmployeeCreationEmail(
-      email,
-      username,
-      existingDesignation.designation_name
-    );
-
-    if (!emailResponse.success) {
-      console.error("Error sending email:", emailResponse.error);
-    }
-
+    await registerUser(email,username,existingRole.role_id,existingRole._id)
     sendSuccessResponse(
       res,
       "Employee created successfully",
@@ -190,6 +192,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     );
   }
 };
+
 export const getEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -205,7 +208,7 @@ export const getEmployeeById = async (req: Request, res: Response) => {
       {
         $lookup: {
           from: "addresses",
-          localField: "address_id", 
+          localField: "address_id",
           foreignField: "_id",
           as: "address",
         },
@@ -262,7 +265,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; 
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     validateMogooseObjectId(id);
     if (updateData.designation) {
       // validateMogooseObjectId(updateData.designation);
@@ -298,9 +301,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
       updateData.profile_picture = profile_picture;
     }
     if (files && files.pan_image) {
-      const pan_image = await uploadFileToCloudinary(
-        files.pan_image[0].buffer
-      );
+      const pan_image = await uploadFileToCloudinary(files.pan_image[0].buffer);
       updateData.pan_image = pan_image;
     }
     if (files && files.aadhar_image) {
@@ -309,7 +310,6 @@ export const updateEmployee = async (req: Request, res: Response) => {
       );
       updateData.aadhar_image = aadhar_image;
     }
- 
 
     // Update address fields (if provided)
     if (
@@ -337,8 +337,8 @@ export const updateEmployee = async (req: Request, res: Response) => {
       { new: true }
     )
       .populate("designation", "designation_name")
-      .populate("address_id", "street city state country")
-    
+      .populate("address_id", "street city state country");
+
     if (!updatedEmployee) {
       throw new CustomError(
         "Employee not found",
