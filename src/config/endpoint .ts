@@ -10,6 +10,9 @@ export const apiConfig = {
     adminLogin: "/admin/login",
     adminRegister: "/admin/register",
     accessToken: "/new/access-token",
+    forgotPassword: "/admin/forgot-password",
+    verifyForgotOtp: "/admin/verify-password",
+    updatePassword: "/admin/update-password",
   },
   users: {
     getUser: "/users/:id",

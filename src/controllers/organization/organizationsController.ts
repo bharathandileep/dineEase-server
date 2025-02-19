@@ -122,12 +122,11 @@ export const handleGetOrganisations = async (
     const skip = (page - 1) * limit;
 
     const matchQuery: any = { is_deleted: false };
-    if (req.query.kitchen_status)
-      matchQuery.kitchen_status = req.query.kitchen_status;
-    if (req.query.kitchen_type)
-      matchQuery.kitchen_type = req.query.kitchen_type;
+    if (req.query.organization_status)
+      matchQuery.organization_status = req.query.organization_status;
+   
 
-    const kitchens = await Organization.aggregate([
+    const orgnization = await Organization.aggregate([
       { $match: matchQuery },
       { $skip: skip },
       { $limit: limit },
@@ -154,15 +153,15 @@ export const handleGetOrganisations = async (
       },
     ]);
 
-    const totalKitchens = await Organization.countDocuments(matchQuery);
+    const totalOrganization = await Organization.countDocuments(matchQuery);
     return sendSuccessResponse(
       res,
       "org retrieved successfully!",
       {
-        kitchens,
-        totalPages: Math.ceil(totalKitchens / limit),
+        orgnization,
+        totalPages: Math.ceil(totalOrganization / limit),
         currentPage: page,
-        totalKitchens,
+        totalOrganization,
       },
       HTTP_STATUS_CODE.OK
     );

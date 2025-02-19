@@ -45,6 +45,11 @@ app.use(`${apiConfig.baseAPIUrl}/orgemployee`, OrgEmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/kitchens-menu`, kitchensMenuRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
 app.use(`${apiConfig.baseAPIUrl}/org-employee`, OrgEmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
+app.use(`${apiConfig.baseAPIUrl}/org-employee`,OrgEmployeeManagementRoutes)
+app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
+app.use(`${apiConfig.baseAPIUrl}/orgemployee`, OrgEmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/kitchens-menu`, kitchensMenuRoutes);
 
 // Health check route
 app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {

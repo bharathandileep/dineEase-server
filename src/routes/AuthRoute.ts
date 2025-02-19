@@ -10,8 +10,9 @@ import {
   handleGenerateAccessToken,
 } from "../controllers/auth/authController";
 import { otpRateLimiter } from "../middleware/rateLimiter";
-import { handleAdminLogin, handleRegisterAdmin } from "../controllers/auth/adminController";
+import { generateForgotPassOtp, handleAdminLogin, handleForgotPasswordVerification, handleRegisterAdmin, handleUpdatePassword } from "../controllers/auth/adminController";
 import { refreshTokenMiddleware } from "../middleware/TokenValidation";
+
 
 const router = express.Router();
 
@@ -28,6 +29,10 @@ router.post(`${apiConfig.auth.verifyLoginOtp}`, handleLoginOtpVerification);
 router.post(`${apiConfig.auth.adminRegister}`, handleRegisterAdmin);
 router.post(`${apiConfig.auth.adminLogin}`, handleAdminLogin);
 router.post(`${apiConfig.auth.accessToken}`, refreshTokenMiddleware, handleGenerateAccessToken);
+router.post(`${apiConfig.auth.forgotPassword}`, generateForgotPassOtp);
+router.post(`${apiConfig.auth.verifyForgotOtp}`, handleForgotPasswordVerification);
+router.post(`${apiConfig.auth.updatePassword}`, handleUpdatePassword);
+
+
 
 export default router;
- 

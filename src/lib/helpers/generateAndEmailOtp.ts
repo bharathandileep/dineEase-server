@@ -5,9 +5,8 @@ import { generateOtp } from "./generateOtp";
 import { hashPassword } from "./generatePasswordHash";
 import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
-
-
-
+import { forgotPassHtml } from "../views/forgotPassTemplate";
+import PasswordReset from "../../models/users/ForgotOtpModel";
 
 
 export const generateAndEmailOtp = async (email: string, fullName: string) => {
@@ -16,7 +15,7 @@ export const generateAndEmailOtp = async (email: string, fullName: string) => {
   const subject = "Your Account Verification Code - Dineeas";
   const text = `Your OTP is: ${generatedOTP}`;
   const html = generateOtpEmailHtml(generatedOTP);
-
+ 
   const isMailSend = await sendEmail({ email, subject, html, text });
   try {
     const hashedOtp = await hashPassword(generatedOTP);
@@ -30,6 +29,30 @@ export const generateAndEmailOtp = async (email: string, fullName: string) => {
     return { success: false, error };
   }
 };
+
+export const generateAndEmailForgotOtp = async (email: string, fullName: string) => {
+  const generatedOTP = generateOtp();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+  const subject = "Your Account Verification Code - Dineeas";
+  const text = `Your OTP is: ${generatedOTP}`;
+  const html = forgotPassHtml(generatedOTP);
+  console.log(email,fullName)
+  const isMailSend = await sendEmail({ email, subject, html, text });
+  try {
+    const hashedOtp = await hashPassword(generatedOTP);
+    await PasswordReset.findOneAndUpdate(
+      { email },
+      { fullName, otp: hashedOtp, expiresAt, attempts: 0 },
+      { upsert: true, new: true }
+    );
+    return isMailSend;
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+
+
 
 export const sendEmployeeCreationEmail = async (
   email: string,
