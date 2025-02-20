@@ -77,6 +77,8 @@ export const createDesignation = async (req: Request, res: Response) => {
   }
 };
 
+
+
 export const getAllDesignations = async (req: Request, res: Response) => {
   try {
     const designations = await Designation.find();
@@ -95,6 +97,7 @@ export const getAllDesignations = async (req: Request, res: Response) => {
     );
   }
 };
+
 export const getDesignationById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

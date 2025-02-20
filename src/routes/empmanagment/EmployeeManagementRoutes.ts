@@ -22,11 +22,13 @@ router.get(`${apiConfig.employee.getEmployeeById}`,
   ]), getEmployeeById);
 router.post(`${apiConfig.employee.createEmployee}`, 
   upload.fields([
-    { name: "profile_picture", maxCount: 1 },
+    { name: "profile_picture", maxCount: 1},  { name: "pan_image", maxCount: 1 },
+    { name: "aadhar_image", maxCount: 1 }, 
   ]),createEmployee);
 router.put(`${apiConfig.employee.updateEmployee}`, 
   upload.fields([
-    { name: "profile_picture", maxCount: 1 },
+    { name: "profile_picture", maxCount: 1},  { name: "pan_image", maxCount: 1 },
+    { name: "aadhar_image", maxCount: 1 }, 
   ]), updateEmployee);
 router.delete(`${apiConfig.employee.deleteEmployee}`, deleteEmployee);
 router.patch(`${apiConfig.employee.toggleEmployeeStatus}`, toggleEmployeeStatus);

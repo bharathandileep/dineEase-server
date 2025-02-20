@@ -1,5 +1,3 @@
-import { port } from "./environment";
-
 export const apiConfig = {
   baseAPIUrl: `/api/v1`,
   auth: {
@@ -9,14 +7,16 @@ export const apiConfig = {
     verifyOtp: "/verify-otp",
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
+
     adminLogin: "/admin/login",
     adminRegister: "/admin/register",
     accessToken: "/new/access-token",
-  },
-  users: {
-    getUser: "/users/:id",
-    createUser: "/users",
-    updateUser: "/users/:id",
+    forgotPassword: "/admin/forgot-password",
+    verifyForgotOtp: "/admin/verify-password",
+    updatePassword: "/admin/update-password",
+    
+    userLogins:"/access/login",
+    userRegister:"/access/register"
   },
   kitchens: {
     newkitchens: "/new",
@@ -58,14 +58,13 @@ export const apiConfig = {
     deleteSubcategory: "/subcategories/:id",
     toggleSubcategoryStatus: "/subcategories/:id/toggle-status",
 
-  createItem:"/allmenuitems",
-    getItemById:"/allmenuitems/:id",
-    listItems:"/allmenuitems",
-    updateItem:"/allmenuitems/:id",
-    deleteItem:"/allmenuitems/:id",
+    createItem: "/allmenuitems",
+    getItemById: "/allmenuitems/:id",
+    listItems: "/allmenuitems",
+    updateItem: "/allmenuitems/:id",
+    deleteItem: "/allmenuitems/:id",
     // changeItemStatus:"/allmenuitems/:id/status"
-    changeItemStatus:"/allmenuitems/:id/status"
-
+    changeItemStatus: "/allmenuitems/:id/status",
   },
   organization: {
     newOrganization: "/new",
@@ -119,5 +118,15 @@ export const apiConfig = {
     getCitiesByState: "/cities/:stateName",
     getDistrictsByState:"/districts/:stateId",
     //getcitiesByDistricts:"/cities/:districtName"
-  }
-  };
+  },
+
+  kitchenMenu: {
+    getKitchenMenu: "/kitchen-menu/:kitchenId",
+    createkitchenMenu: "/kitchen-menu/:id",
+    getkitchenMenuItemDetail: "/:kitchenId/menu-item/:itemId",
+    removekitchenMenu: "/kitchen-menu/:kitchen_id/remove/:item_id",
+    updateKitchenMenu: "/:kitchenId/menu-item/:itemId",
+    deleteSubcategory: "/kitchen-menu/subcategories/:id",
+    toggleSubcategoryStatus: "/kitchen-menu/subcategories/:id/toggle-status",
+  },
+};
