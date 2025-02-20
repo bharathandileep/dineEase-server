@@ -7,7 +7,8 @@ import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
 import { forgotPassHtml } from "../views/forgotPassTemplate";
 import { generateWelcomeEmailHtml } from "../views/generateWelcomeEmailHtml";
-import PasswordOTPReset from "../../models/users/ForgotPasswordOTP";
+import PasswordOTPResetOTP from "../../models/users/passwordResetOTP";
+
 
 
 export const generateAndEmailOtp = async (email: string, fullName: string) => {
@@ -40,7 +41,7 @@ export const generateAndEmailForgotOtp = async (email: string, fullName: string)
   const isMailSend = await sendEmail({ email, subject, html, text });
   try {
     const hashedOtp = await hashPassword(generatedOTP);
-    await PasswordOTPReset.findOneAndUpdate(
+    await PasswordOTPResetOTP.findOneAndUpdate(
       { email },
       { fullName, otp: hashedOtp, expiresAt, attempts: 0 },
       { upsert: true, new: true }
