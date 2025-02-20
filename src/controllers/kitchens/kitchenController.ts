@@ -19,14 +19,61 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 
 
+const validateKitchenDetails = (data: any) => {
+  const errors: { field: string; message: string }[] = [];
 
+  // PAN Card Validation
+  if (!data.pan_card_number) {
+    errors.push({ field: "pan_card_number", message: "PAN card number is required." });
+  } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(data.pan_card_number)) {
+    errors.push({ field: "pan_card_number", message: "Invalid PAN card number." });
+  }
+
+  if (!data.pan_card_user_name) {
+    errors.push({ field: "pan_card_user_name", message: "PAN card user name is required." });
+  }
+
+  // GST Validation
+  if (!data.gst_number) {
+    errors.push({ field: "gst_number", message: "GST number is required." });
+  } else if (
+    !/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/.test(data.gst_number)
+  ) {
+    errors.push({ field: "gst_number", message: "Invalid GST number." });
+  }
+
+  if (!data.gst_expiry_date) {
+    errors.push({ field: "gst_expiry_date", message: "GST expiry date is required." });
+  }
+
+  // FSSAI Validation
+  if (!data.ffsai_certificate_number) {
+    errors.push({ field: "ffsai_certificate_number", message: "FSSAI certificate number is required." });
+  } else if (!/^1\d{13}$/.test(data.ffsai_certificate_number)) {
+    errors.push({ field: "ffsai_certificate_number", message: "Invalid FSSAI number. It must be 14 digits and start with '1'." });
+  }
+
+  if (!data.ffsai_card_owner_name) {
+    errors.push({ field: "ffsai_card_owner_name", message: "FSSAI card owner name is required." });
+  }
+
+  return errors;
+};
 
 
 export const handleCreateNewKitchens = async (
   req: Request,
   res: Response
 ): Promise<any> => {
-  try {
+ 
+  
+  // try {
+    try {
+      const errors = validateKitchenDetails(req.body);
+      if (errors.length > 0) {
+        return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
+      }
+    
     const {
       kitchen_name,
       user_id,
@@ -40,6 +87,8 @@ export const handleCreateNewKitchens = async (
       address_type,
       street_address,
       district,
+      category,
+      subcategoryName,
       city,
       state,
       pincode,
@@ -57,6 +106,7 @@ export const handleCreateNewKitchens = async (
     const kitchenImageUrl = await uploadFileToCloudinary(
       files.kitchen_image[0].buffer
     );
+
     const newKitchen = await Kitchen.create({
       kitchen_name,
       user_id: new mongoose.Types.ObjectId(user_id),
@@ -64,6 +114,8 @@ export const handleCreateNewKitchens = async (
       kitchen_owner_name,
       owner_email,
       owner_phone_number,
+      category:new mongoose.Types.ObjectId(category),
+      subcategoryName:new mongoose.Types.ObjectId(subcategoryName),
       restaurant_type,
       kitchen_type,
       kitchen_phone_number,
@@ -132,6 +184,15 @@ export const handleCreateNewKitchens = async (
   }
 };
 
+
+
+
+
+
+
+
+
+
 export const handleGetKitchens = async (
   req: Request,
   res: Response
@@ -159,6 +220,22 @@ export const handleGetKitchens = async (
           localField: "address_id",
           foreignField: "_id",
           as: "addresses",
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategory",
+          foreignField: "_id",
+          as: "subcategoryDetails",
         },
       },
       {
@@ -224,6 +301,22 @@ export const handleGetKitchensById = async (
       },
       {
         $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategory",
+          foreignField: "_id",
+          as: "subcategoryDetails",
+        },
+      },
+      {
+        $lookup: {
           from: "kitchenfssaicertificatedetails",
           localField: "_id",
           foreignField: "kitchen_id",
@@ -277,6 +370,8 @@ export const handleGetKitchensById = async (
           owner_email: 1,
           owner_phone_number: 1,
           restaurant_type: 1,
+          category: { $arrayElemAt: ["$categoryDetails", 0] },
+          subcategoryName: { $arrayElemAt: ["$subcategoryDetails", 0] },
           kitchen_type: 1,
           kitchen_phone_number: 1,
           kitchen_document_verification: 1,
@@ -320,6 +415,10 @@ export const handleUpdateKitchensById = async (
   res: Response
 ): Promise<void> => {
   try {
+    const errors = validateKitchenDetails(req.body);
+    if (errors.length > 0) {
+      return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
+    }
     const kitchenId = req.params.id;
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const {
@@ -330,6 +429,8 @@ export const handleUpdateKitchensById = async (
       owner_phone_number,
       restaurant_type,
       kitchen_type,
+      category,
+      subcategoryName,
       kitchen_phone_number,
       address_type,
       street_address,
@@ -387,6 +488,8 @@ export const handleUpdateKitchensById = async (
           kitchen_owner_name,
           owner_email,
           owner_phone_number,
+          category: category ? new mongoose.Types.ObjectId(category) : existingKitchen.category,
+          subcategoryName: subcategoryName ? new mongoose.Types.ObjectId(subcategoryName) : existingKitchen.subcategoryName,
           restaurant_type,
           kitchen_type,
           kitchen_phone_number,
@@ -464,7 +567,9 @@ export const handleUpdateKitchensById = async (
         { upsert: true, new: true }
       );
     }
-
+    const updatedKitchen = await Kitchen.findById(kitchenId)
+      .populate('category')
+      .populate('subcategoryName');
     sendSuccessResponse(
       res,
       "Kitchen updated successfully!",
