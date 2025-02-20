@@ -17,6 +17,9 @@ import GstCertificateDetails from "../../models/documentations/GstModel";
 import FssaiCertificateDetails from "../../models/documentations/FfsaiModel";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
+import Country from "../../models/country/Country";
+import State from "../../models/state/StateModel";
+import City from "../../models/city/City";
 
 
 const validateKitchenDetails = (data: any) => {
@@ -61,19 +64,137 @@ const validateKitchenDetails = (data: any) => {
 };
 
 
-export const handleCreateNewKitchens = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+// export const handleCreateNewKitchens = async (
+//   req: Request,
+//   res: Response
+// ): Promise<any> => {
  
   
-  // try {
-    try {
-      const errors = validateKitchenDetails(req.body);
-      if (errors.length > 0) {
-        return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
-      }
+//   // try {
+//     try {
+//       const errors = validateKitchenDetails(req.body);
+//       if (errors.length > 0) {
+//         return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
+//       }
     
+//     const {
+//       kitchen_name,
+//       user_id,
+//       kitchen_status,
+//       kitchen_owner_name,
+//       owner_email,
+//       owner_phone_number,
+//       restaurant_type,
+//       kitchen_type,
+//       kitchen_phone_number,
+//       address_type,
+//       street_address,
+//       district,
+//       category,
+//       subcategoryName,
+//       city,
+//       state,
+//       pincode,
+//       country,
+//       pan_card_number,
+//       pan_card_user_name,
+//       gst_number,
+//       gst_expiry_date,
+//       ffsai_certificate_number,
+//       ffsai_card_owner_name,
+//       ffsai_expiry_date,
+//     } = req.body;
+
+//     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+//     const kitchenImageUrl = await uploadFileToCloudinary(
+//       files.kitchen_image[0].buffer
+//     );
+
+//     const newKitchen = await Kitchen.create({
+//       kitchen_name,
+//       user_id: new mongoose.Types.ObjectId(user_id),
+//       kitchen_status,
+//       kitchen_owner_name,
+//       owner_email,
+//       owner_phone_number,
+//       category:new mongoose.Types.ObjectId(category),
+//       subcategoryName:new mongoose.Types.ObjectId(subcategoryName),
+//       restaurant_type,
+//       kitchen_type,
+//       kitchen_phone_number,
+//       kitchen_image: kitchenImageUrl,
+//       working_days: [],
+//       pre_ordering_options: [],
+//     });
+
+//     const kitchenId = newKitchen._id;
+
+//     await createAddressAndUpdateModel(Kitchen, newKitchen._id, {
+//       street_address,
+//       city,
+//       state,
+//       district,
+//       pincode,
+//       country,
+//       address_type,
+//       prepared_by_id: kitchenId,
+//       entity_type: "Kitchen",
+//     });
+//     const FsssaiImageUrl = await uploadFileToCloudinary(
+//       files.ffsai_certificate_image[0].buffer
+//     );
+//     await FssaiCertificateDetails.create({
+//       kitchen_id: kitchenId,
+//       ffsai_certificate_number,
+//       ffsai_card_owner_name,
+//       ffsai_certificate_image: FsssaiImageUrl,
+//       expiry_date: ffsai_expiry_date,
+//     });
+//     const gstImageUrl = await uploadFileToCloudinary(
+//       files.gst_certificate_image[0].buffer
+//     );
+//     const newGstCertificate = await GstCertificateDetails.create({
+//       prepared_by_id: kitchenId,
+//       entity_type: "Kitchen",
+//       gst_number,
+//       gst_certificate_image: gstImageUrl,
+//       expiry_date: gst_expiry_date,
+//     });
+
+//     const panImageUrl = await uploadFileToCloudinary(
+//       files.pan_card_image[0].buffer
+//     );
+//     const newPanCardDetails = await PanCardDetails.create({
+//       prepared_by_id: kitchenId,
+//       entity_type: "Kitchen",
+//       pan_card_number,
+//       pan_card_user_name,
+//       pan_card_image: panImageUrl,
+//     });
+//     return sendSuccessResponse(
+//       res,
+//       "Kitchen and associated details created successfully",
+//       null,
+//       HTTP_STATUS_CODE.OK
+//     );
+//   } catch (error) {
+//     sendErrorResponse(
+//       res,
+//       error,
+//       HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+//       ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
+//     );
+//   }
+// };
+export const handleCreateNewKitchens = async (req: Request, res: Response): Promise<any> => {
+  try {
+    // Validate request body
+    const errors = validateKitchenDetails(req.body);
+    if (errors.length > 0) {
+      return sendErrorResponse(res, errors, HTTP_STATUS_CODE.BAD_REQUEST, ERROR_TYPES.BAD_REQUEST_ERROR);
+    }
+
+    // Extract fields from request
     const {
       kitchen_name,
       user_id,
@@ -102,11 +223,18 @@ export const handleCreateNewKitchens = async (
       ffsai_expiry_date,
     } = req.body;
 
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    const kitchenImageUrl = await uploadFileToCloudinary(
-      files.kitchen_image[0].buffer
-    );
+    // Validate category and subcategory before converting to ObjectId
+    const categoryId = category ? new mongoose.Types.ObjectId(category) : null;
+    const subcategoryId = subcategoryName ? new mongoose.Types.ObjectId(subcategoryName) : null;
 
+    // Handle file uploads safely
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    const kitchenImageUrl = files?.kitchen_image?.[0]?.buffer 
+      ? await uploadFileToCloudinary(files.kitchen_image[0].buffer) 
+      : null;
+
+    // Create new Kitchen entry
     const newKitchen = await Kitchen.create({
       kitchen_name,
       user_id: new mongoose.Types.ObjectId(user_id),
@@ -114,8 +242,8 @@ export const handleCreateNewKitchens = async (
       kitchen_owner_name,
       owner_email,
       owner_phone_number,
-      category:new mongoose.Types.ObjectId(category),
-      subcategoryName:new mongoose.Types.ObjectId(subcategoryName),
+      category: categoryId,
+      subcategoryName: subcategoryId,
       restaurant_type,
       kitchen_type,
       kitchen_phone_number,
@@ -126,7 +254,8 @@ export const handleCreateNewKitchens = async (
 
     const kitchenId = newKitchen._id;
 
-    await createAddressAndUpdateModel(Kitchen, newKitchen._id, {
+    // Create Address
+    await createAddressAndUpdateModel(Kitchen, kitchenId, {
       street_address,
       city,
       state,
@@ -137,61 +266,49 @@ export const handleCreateNewKitchens = async (
       prepared_by_id: kitchenId,
       entity_type: "Kitchen",
     });
-    const FsssaiImageUrl = await uploadFileToCloudinary(
-      files.ffsai_certificate_image[0].buffer
-    );
-    await FssaiCertificateDetails.create({
-      kitchen_id: kitchenId,
-      ffsai_certificate_number,
-      ffsai_card_owner_name,
-      ffsai_certificate_image: FsssaiImageUrl,
-      expiry_date: ffsai_expiry_date,
-    });
-    const gstImageUrl = await uploadFileToCloudinary(
-      files.gst_certificate_image[0].buffer
-    );
-    const newGstCertificate = await GstCertificateDetails.create({
-      prepared_by_id: kitchenId,
-      entity_type: "Kitchen",
-      gst_number,
-      gst_certificate_image: gstImageUrl,
-      expiry_date: gst_expiry_date,
-    });
 
-    const panImageUrl = await uploadFileToCloudinary(
-      files.pan_card_image[0].buffer
-    );
-    const newPanCardDetails = await PanCardDetails.create({
-      prepared_by_id: kitchenId,
-      entity_type: "Kitchen",
-      pan_card_number,
-      pan_card_user_name,
-      pan_card_image: panImageUrl,
-    });
-    return sendSuccessResponse(
-      res,
-      "Kitchen and associated details created successfully",
-      null,
-      HTTP_STATUS_CODE.OK
-    );
+    // Upload FSSAI Certificate Image
+    if (files?.ffsai_certificate_image?.[0]?.buffer) {
+      const FsssaiImageUrl = await uploadFileToCloudinary(files.ffsai_certificate_image[0].buffer);
+      await FssaiCertificateDetails.create({
+        kitchen_id: kitchenId,
+        ffsai_certificate_number,
+        ffsai_card_owner_name,
+        ffsai_certificate_image: FsssaiImageUrl,
+        expiry_date: ffsai_expiry_date,
+      });
+    }
+
+    // Upload GST Certificate Image
+    if (files?.gst_certificate_image?.[0]?.buffer) {
+      const gstImageUrl = await uploadFileToCloudinary(files.gst_certificate_image[0].buffer);
+      await GstCertificateDetails.create({
+        prepared_by_id: kitchenId,
+        entity_type: "Kitchen",
+        gst_number,
+        gst_certificate_image: gstImageUrl,
+        expiry_date: gst_expiry_date,
+      });
+    }
+
+    // Upload PAN Card Image
+    if (files?.pan_card_image?.[0]?.buffer) {
+      const panImageUrl = await uploadFileToCloudinary(files.pan_card_image[0].buffer);
+      await PanCardDetails.create({
+        prepared_by_id: kitchenId,
+        entity_type: "Kitchen",
+        pan_card_number,
+        pan_card_user_name,
+        pan_card_image: panImageUrl,
+      });
+    }
+
+    return sendSuccessResponse(res, "Kitchen and associated details created successfully", null, HTTP_STATUS_CODE.OK);
   } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
+    console.error("Error creating kitchen:", error);
+    sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
-
-
-
-
-
-
-
-
-
 
 export const handleGetKitchens = async (
   req: Request,
@@ -233,7 +350,7 @@ export const handleGetKitchens = async (
       {
         $lookup: {
           from: "subcategories",
-          localField: "subcategory",
+          localField: "subcategoryName",
           foreignField: "_id",
           as: "subcategoryDetails",
         },
@@ -246,6 +363,8 @@ export const handleGetKitchens = async (
           kitchen_type: 1,
           kitchen_phone_number: 1,
           kitchen_image: 1,
+          categoryDetails:1,
+          subcategoryDetails:1,
           addresses: 1,
           owner_email: 1,
           kitchen_status: 1,
@@ -308,7 +427,7 @@ export const handleGetKitchensById = async (
       {
         $lookup: {
           from: "subcategories",
-          localField: "subcategory",
+          localField: "subcategoryName",
           foreignField: "_id",
           as: "subcategoryDetails",
         },
@@ -370,6 +489,8 @@ export const handleGetKitchensById = async (
           restaurant_type: 1,
           category: { $arrayElemAt: ["$categoryDetails", 0] },
           subcategoryName: { $arrayElemAt: ["$subcategoryDetails", 0] },
+          // categoryDetails:1,
+          // subcategoryDetails:1,
           kitchen_type: 1,
           kitchen_phone_number: 1,
           kitchen_document_verification: 1,
@@ -620,3 +741,8 @@ export const handleDeleteKitchens = async (
     );
   }
 };
+
+
+
+
+

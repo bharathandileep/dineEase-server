@@ -18,6 +18,7 @@ import designationRoutes from "./routes/designation/designationRoutes"
 import EmployeeManagementRoutes from "./routes/empmanagment/EmployeeManagementRoutes";
 import OrgEmployeeManagementRoutes from "./routes/empmanagment/OrgEmployeeManagementRoutes";
 import menuitemsRoutes from "./routes/menuitems/menuitemsRoutes"
+import addressDetailsRoutes from "./routes/addressdetails/addressDetailsRoutes"
 export const app: Application = Express();
 
 app.use(Express.json());
@@ -34,6 +35,7 @@ app.use(`${apiConfig.baseAPIUrl}/designation`, designationRoutes);
 app.use(`${apiConfig.baseAPIUrl}/employee`, EmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
 app.use(`${apiConfig.baseAPIUrl}/orgemployee`,OrgEmployeeManagementRoutes)
+app.use(`${apiConfig.baseAPIUrl}/addressDetails`,addressDetailsRoutes)
 
 
 // Health check route

@@ -99,9 +99,13 @@ export const kitchenGetSubcategoriesByCategory = async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const { categoryId } = req.params;
 
+  
+  try {
+    
+    const { categoryId } = req.params;
+    console.log(categoryId);
+    
     validateMogooseObjectId(categoryId);
 
     const category = await kitchenCategory.findOne({
@@ -222,6 +226,7 @@ export const kitchenToggleSubcategoryStatus = async (
         false
       );
     }
+
     const newStatus = !subcategory.status;
     if (newStatus && !subcategory.category.status) {
       throw new CustomError(

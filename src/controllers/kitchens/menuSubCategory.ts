@@ -99,7 +99,7 @@ export const getSubcategoriesByCategory = async (
 ) => {
   try {
     const { categoryId } = req.params;
-
+     console.log(categoryId)
     validateMogooseObjectId(categoryId);
 
     const category = await MenuCategory.findOne({
