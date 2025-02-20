@@ -7,7 +7,7 @@ import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
 import { forgotPassHtml } from "../views/forgotPassTemplate";
 import { generateWelcomeEmailHtml } from "../views/generateWelcomeEmailHtml";
-// import PasswordOTPReset from "../../models/users/ForgotOtpModel";
+import PasswordOTPReset from "../../models/users/forgotPasswordOTP";
 
 
 export const generateAndEmailOtp = async (email: string, fullName: string) => {
