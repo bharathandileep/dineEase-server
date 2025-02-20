@@ -63,7 +63,10 @@ export const getAllCountries = async (req: Request, res: Response): Promise<void
   export const getCitiesByState = async (req: Request, res: Response): Promise<void> => {
     try {
       const { stateName } = req.params;
-      const cities = await City.find({ state_name: stateName });
+      console.log(stateName,"heloo");
+      
+      const cities = await City.find({ state_id: stateName });
+  console.log(cities);
   
       if (cities.length === 0) {
         res.status(404).json({
