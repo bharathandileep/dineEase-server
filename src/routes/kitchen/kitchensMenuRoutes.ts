@@ -10,8 +10,11 @@ import {
 import {
   addMenuItems,
   getAllMenus,
+  getMenuItemDetails,
   removeMenuItem,
+  updateMenuItem,
 } from "../../controllers/kitchens/menuController";
+import upload from "../../lib/helpers/uploadMiddleware";
 
 const router = express.Router();
 
@@ -19,12 +22,14 @@ const router = express.Router();
 router.get(`${apiConfig.kitchenMenu.getKitchenMenu}`, getAllMenus);
 router.get(`${apiConfig.kitchenMenu.removekitchenMenu}`, removeMenuItem);
 router.post(`${apiConfig.kitchenMenu.createkitchenMenu}`, addMenuItems);
-
-router.put(`${apiConfig.kitchens.updateCategory}`, kitchenUpdateCategory);
-router.delete(`${apiConfig.kitchens.deleteCategory}`, kitchenDeleteCategory);
-router.patch(
-  `${apiConfig.menu.toggleCategoryStatus}`,
-  kitchenToggleCategoryStatus
+router.get(
+  `${apiConfig.kitchenMenu.getkitchenMenuItemDetail}`,
+  getMenuItemDetails
+);
+router.put(
+  `${apiConfig.kitchenMenu.updateKitchenMenu}`,
+  upload.fields([{ name: "custom_image", maxCount: 1 }]),
+  updateMenuItem
 );
 
 export default router;

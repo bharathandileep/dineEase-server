@@ -18,8 +18,8 @@ export const appendRefreshTokenCookies = (
     refreshTokenExpiration
   );
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: true, 
-    secure: false, 
+    httpOnly: true,
+    secure: true, 
     sameSite: "none",
   });
 };

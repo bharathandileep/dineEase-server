@@ -16,7 +16,7 @@ import {
 } from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
-import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
+import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndEmailOtp";
 
 
 
@@ -128,8 +128,8 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
 
     validateMogooseObjectId(entity_id);
-
     // validateMogooseObjectId(designation);
+
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
@@ -285,11 +285,8 @@ export const updateEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Handle file uploads
-    console.log(req.body);
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; 
     validateMogooseObjectId(id);
-
-    // Check if designation exists
     if (updateData.designation) {
       // validateMogooseObjectId(updateData.designation);
       const designationExists = await Designation.findById(

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import {
   sendErrorResponse,
   sendSuccessResponse,
@@ -17,8 +18,8 @@ import {
   accessTokenSecret,
 } from "../../config/environment";
 import { CustomError } from "../../lib/errors/customError";
-import { generateAndEmailForgotOtp } from "../../lib/utils/generateAndEmailOtp";
 import { validateForgotOtp, validateOtp } from "../../lib/utils/otpValidator";
+import { generateAndEmailForgotOtp } from "../../lib/helpers/generateAndEmailOtp";
 
 
 export const handleRegisterAdmin = async (req: Request, res: Response) => {

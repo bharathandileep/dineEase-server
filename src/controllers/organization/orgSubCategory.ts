@@ -12,32 +12,30 @@ import OrgCategory from "../../models/organisations/OrgCategory";
 
 export const orgGetAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await OrgSubcategory.find().populate(
-      "category",
-      "category status"
-    );
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await OrgSubcategory.countDocuments({});
+    const categories = await OrgSubcategory.find().populate("category", "category status").skip(startIndex).limit(limit);
 
-    sendSuccessResponse(
-      res,
-      "Categories retrieved successfully",
-      categories,
-      HTTP_STATUS_CODE.OK
-    );
+    const pagination = {
+      currentPage: page,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      itemsPerPage: limit,
+    };
+
+    sendSuccessResponse(res, "Categories retrieved successfully", { categories, pagination }, HTTP_STATUS_CODE.OK);
   } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
+    sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
+
 
 // Create subcategory
 export const orgCreateSubcategory = async (req: Request, res: Response) => {
   try {
     const { category, subcategoryName } = req.body;
-    console.log(req.body);
     if (!category || !subcategoryName) {
       throw new CustomError(
         "Subcategory name and category are required",

@@ -1,13 +1,11 @@
 import nodemailer from "nodemailer";
 import { mailId, mailPassword } from "./environment";
- 
 interface EmailConfig {
   subject: string;
   text: string;
   html: string;
   email: string;
 }
- 
 const createTransporter = () => {
   return nodemailer.createTransport({
     service: "gmail",
@@ -17,7 +15,6 @@ const createTransporter = () => {
     },
   });
 };
- 
 export const sendEmail = async ({ email, subject, text, html }: EmailConfig) => {
   const mailOptions = {
     from: mailId,
@@ -26,13 +23,11 @@ export const sendEmail = async ({ email, subject, text, html }: EmailConfig) => 
     text,
     html,
   };
-
   const transporter = createTransporter();
   try {
-    const info = await transporter.sendMail(mailOptions);console.log(info)
+    const info = await transporter.sendMail(mailOptions);
     return { success: true, info };
   } catch (error) {
     return { success: false, error };
   }
 };
- 

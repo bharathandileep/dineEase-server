@@ -11,7 +11,6 @@ export const refreshTokenMiddleware = (
   next: NextFunction
 ): void => {
   const { refreshToken } = req.cookies;
-  console.log(refreshToken);
   if (!refreshToken) {
     throw new CustomError(
       "Authorization token not provided",
@@ -20,7 +19,7 @@ export const refreshTokenMiddleware = (
       false
     );
   }
-  
+
   const decode = verifyToken(refreshToken, refreshTokenSecret);
   if (!decode) {
     throw new CustomError(
@@ -30,7 +29,6 @@ export const refreshTokenMiddleware = (
       false
     );
   }
-  console.log("=here2");
   req.body.payload = decode;
   next();
 };

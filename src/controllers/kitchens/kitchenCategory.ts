@@ -58,22 +58,25 @@ export const kitchenCreateCategory = async (req: Request, res: Response) => {
 // Get all categories
 export const kitchenGetAllCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await kitchenCategory.find();
-    sendSuccessResponse(
-      res,
-      "Categories retrieved successfully",
-      categories,
-      HTTP_STATUS_CODE.OK
-    );
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await kitchenCategory.countDocuments({});
+    const categories = await kitchenCategory.find().skip(startIndex).limit(limit);
+
+    const pagination = {
+      currentPage: page,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      itemsPerPage: limit,
+    };
+
+    sendSuccessResponse(res, "Categories retrieved successfully", { categories, pagination }, HTTP_STATUS_CODE.OK);
   } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
+    sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
+
 
 export const kitchenToggleCategoryStatus = async (
   req: Request,

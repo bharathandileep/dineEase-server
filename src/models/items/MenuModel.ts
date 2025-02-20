@@ -6,10 +6,13 @@ export interface IMenu extends Document, CommonDBInterface {
   kitchen_id: mongoose.Types.ObjectId;
   items_id: {
     item_id: mongoose.Types.ObjectId;
+    item_name: string;
     item_price?: string;
     custom_image?: string;
     isAvailable: boolean;
     reviews_id: any[];
+    description: string;
+    ingredients?: string;
   }[];
   menu_image: string;
   // item_type: "vegetarian" | "non-vegetarian" | "vegan" | "mixed";
@@ -32,12 +35,22 @@ export const MenuSchema: Schema<IMenu> = new Schema(
           ref: "Item",
           required: true,
         },
+        item_name: {
+          type: String,
+        },
         item_price: {
           type: String,
         },
         isAvailable: {
           type: Boolean,
           default: true,
+        },
+        description: {
+          type: String,
+        },
+        ingredients: {
+          type: [String],
+          default: [],
         },
         custom_image: {
           type: String,

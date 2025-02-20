@@ -19,26 +19,32 @@ import EmployeeManagementRoutes from "./routes/empmanagment/EmployeeManagementRo
 import OrgEmployeeManagementRoutes from "./routes/empmanagment/OrgEmployeeManagementRoutes";
 import menuitemsRoutes from "./routes/menuitems/menuitemsRoutes";
 import kitchensMenuRoutes from "./routes/kitchen/kitchensMenuRoutes";
+import { clientOrigin } from "./config/environment";
 
 export const app: Application = Express();
 
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
   cors({
-    origin: true,
+    origin:clientOrigin,
     credentials: true,
   })
 );
-app.use(cookieParser());
 
 app.use(`${apiConfig.baseAPIUrl}/auth`, authRoute);
 app.use(`${apiConfig.baseAPIUrl}/kitchens`, kitchensRoute);
 app.use(`${apiConfig.baseAPIUrl}/menu-category`, menuCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/sub-menu-category`, menuSubCategoryRoutes);
-app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
 app.use(`${apiConfig.baseAPIUrl}/designation`, designationRoutes);
+app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
 app.use(`${apiConfig.baseAPIUrl}/employee`, EmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
+app.use(`${apiConfig.baseAPIUrl}/orgemployee`, OrgEmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/kitchens-menu`, kitchensMenuRoutes);
+app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
+app.use(`${apiConfig.baseAPIUrl}/org-employee`, OrgEmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
 app.use(`${apiConfig.baseAPIUrl}/org-employee`,OrgEmployeeManagementRoutes)
 app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);

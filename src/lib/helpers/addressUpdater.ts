@@ -7,7 +7,6 @@ export const createAddressAndUpdateModel = async (
   addressDetails: any
 ): Promise<void> => {
   try {
-    console.log(addressDetails);
     const newAddress = new Address(addressDetails);
     const savedAddress = await newAddress.save();
     await model.findByIdAndUpdate(modelId, {

@@ -10,27 +10,24 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import kitchenSubcategory from "../../models/kitchen/KitchenSubCategorymodel";
 import kitchenCategory from "../../models/kitchen/KitchenCategoryModel";
 
-export const kitchenGetAllSubCategories = async (
-  req: Request,
-  res: Response
-) => {
+export const kitchenGetAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await kitchenSubcategory
-      .find()
-      .populate("category", "category");
-    sendSuccessResponse(
-      res,
-      "Categories retrieved successfully",
-      categories,
-      HTTP_STATUS_CODE.OK
-    );
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await kitchenSubcategory.countDocuments({});
+    const categories = await kitchenSubcategory.find().populate("category", "category").skip(startIndex).limit(limit);
+
+    const pagination = {
+      currentPage: page,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      itemsPerPage: limit,
+    };
+
+    sendSuccessResponse(res, "Categories retrieved successfully", { categories, pagination }, HTTP_STATUS_CODE.OK);
   } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
+    sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
 
@@ -209,7 +206,6 @@ export const kitchenToggleSubcategoryStatus = async (
 ) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const subcategory = await kitchenSubcategory.findById(id).populate<{
       category: any;
     }>("category", "category status");

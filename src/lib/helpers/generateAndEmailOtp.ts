@@ -1,11 +1,8 @@
 import { mailId, mailPassword } from "../../config/environment";
 import nodemailer from "nodemailer";
 import { generateOtpEmailHtml } from "../views/otpEmailTemplate";
-import { generateOtp } from "../helpers/generateOtp";
-import { CustomError } from "../errors/customError";
-import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
-import { ERROR_TYPES } from "../constants/errorType";
-import { hashPassword } from "../helpers/generatePasswordHash";
+import { generateOtp } from "./generateOtp";
+import { hashPassword } from "./generatePasswordHash";
 import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
 import { forgotPassHtml } from "../views/forgotPassTemplate";
@@ -89,7 +86,11 @@ export const sendEmployeeCreationEmail = async (
     return { success: false, error };
   }
 };
-export const sendResetPasswordEmail = async (email: string, fullName: string) => {
+
+export const sendResetPasswordEmail = async (
+  email: string,
+  fullName: string
+) => {
   const generatedOTP = generateOtp();
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
   const mailOptions = {

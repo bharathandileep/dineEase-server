@@ -16,7 +16,7 @@ import {
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
 import OrgEmployeeManagement from "../../models/empmanagment/OrgEmployeeManagementModel";
-import { sendEmployeeCreationEmail } from "../../lib/utils/generateAndEmailOtp";
+import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndEmailOtp";
 
 
 export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
