@@ -7,7 +7,7 @@ import Otp from "../../models/users/OTPSModel";
 import { sendEmail } from "../../config/mailConfig";
 import { forgotPassHtml } from "../views/forgotPassTemplate";
 import { generateWelcomeEmailHtml } from "../views/generateWelcomeEmailHtml";
-import PasswordOTPReset from "../../models/users/forgotPasswordOTP";
+import PasswordOTPReset from "../../models/users/ForgotPasswordOTP";
 
 
 export const generateAndEmailOtp = async (email: string, fullName: string) => {
@@ -37,7 +37,6 @@ export const generateAndEmailForgotOtp = async (email: string, fullName: string)
   const subject = "Your Account Verification Code - Dineeas";
   const text = `Your OTP is: ${generatedOTP}`;
   const html = forgotPassHtml(generatedOTP);
-  console.log(email,fullName)
   const isMailSend = await sendEmail({ email, subject, html, text });
   try {
     const hashedOtp = await hashPassword(generatedOTP);
