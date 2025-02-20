@@ -20,6 +20,6 @@ const passwordResetSchema: Schema<IPasswordReset> = new Schema<IPasswordReset>(
   { timestamps: true }
 );
 
-const PasswordReset: Model<IPasswordReset> = mongoose.model<IPasswordReset>("PasswordReset", passwordResetSchema);
+const PasswordOTPReset: Model<IPasswordReset> = mongoose.model<IPasswordReset>("PasswordReset", passwordResetSchema);
 
-export default PasswordReset;
+export default PasswordOTPReset;
