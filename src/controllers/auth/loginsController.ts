@@ -160,4 +160,4 @@ export const registerUser = async (
       role_id
     });
     await newUser.save();
-};
+}; 
