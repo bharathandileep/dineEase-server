@@ -112,59 +112,169 @@ export const handleCreateNewOrganisation = async (
   }
 };
 
-export const handleGetOrganisations = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const handleGetOrganisations = async (req: Request, res: Response): Promise<any> => {
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const limit = parseInt(req.query.limit as string) || 4;
     const skip = (page - 1) * limit;
 
     const matchQuery: any = { is_deleted: false };
-    if (req.query.organization_status)
-      matchQuery.organization_status = req.query.organization_status;
-   
 
-    const orgnization = await Organization.aggregate([
-      { $match: matchQuery },
-      { $skip: skip },
-      { $limit: limit },
-      {
-        $lookup: {
-          from: "addresses",
-          localField: "address_id",
-          foreignField: "_id",
-          as: "addresses",
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          organizationName: 1,
-          managerName: 1,
-          register_number: 1,
-          contact_number: 1,
-          email: 1,
-          organizationLogo: 1,
-          addresses: 1,
-          no_of_employees: 1,
-        },
-      },
-    ]);
+    // Add search functionality
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search as string, "i");
 
-    const totalOrganization = await Organization.countDocuments(matchQuery);
-    return sendSuccessResponse(
-      res,
-      "org retrieved successfully!",
-      {
-        orgnization,
-        totalPages: Math.ceil(totalOrganization / limit),
-        currentPage: page,
-        totalOrganization,
-      },
-      HTTP_STATUS_CODE.OK
-    );
+      // Base organization fields
+      const orgMatch = {
+        $or: [
+          { organizationName: searchRegex },
+          { email: searchRegex },
+          { contact_number: searchRegex },
+          { managerName: searchRegex },
+          { register_number: searchRegex },
+          { no_of_employees: { $eq: parseInt(req.query.search as string) || -1 } }, // Match exact number if numeric
+        ],
+      };
+
+      const orgnization = await Organization.aggregate([
+        // Initial match on organization fields
+        { $match: matchQuery },
+        // Lookup addresses
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "address_id",
+            foreignField: "_id",
+            as: "addresses",
+          },
+        },
+        // Unwind addresses to search within each address individually
+        { $unwind: { path: "$addresses", preserveNullAndEmptyArrays: true } },
+        // Combined match for organization and address fields
+        {
+          $match: {
+            $or: [
+              orgMatch,
+              { "addresses.street_address": searchRegex },
+              { "addresses.city": searchRegex },
+              { "addresses.country": searchRegex },
+            ],
+          },
+        },
+        // Group back to avoid duplicating organizations
+        {
+          $group: {
+            _id: "$_id",
+            organizationName: { $first: "$organizationName" },
+            managerName: { $first: "$managerName" },
+            register_number: { $first: "$register_number" },
+            contact_number: { $first: "$contact_number" },
+            email: { $first: "$email" },
+            organizationLogo: { $first: "$organizationLogo" },
+            no_of_employees: { $first: "$no_of_employees" },
+            addresses: { $push: "$addresses" },
+          },
+        },
+        // Pagination
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $project: {
+            _id: 1,
+            organizationName: 1,
+            managerName: 1,
+            register_number: 1,
+            contact_number: 1,
+            email: 1,
+            organizationLogo: 1,
+            addresses: 1,
+            no_of_employees: 1,
+          },
+        },
+      ]);
+
+      // Count total documents with the same match logic
+      const totalDocs = await Organization.aggregate([
+        { $match: matchQuery },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "address_id",
+            foreignField: "_id",
+            as: "addresses",
+          },
+        },
+        { $unwind: { path: "$addresses", preserveNullAndEmptyArrays: true } },
+        {
+          $match: {
+            $or: [
+              orgMatch,
+              { "addresses.street_address": searchRegex },
+              { "addresses.city": searchRegex },
+              { "addresses.country": searchRegex },
+            ],
+          },
+        },
+        { $group: { _id: "$_id" } },
+        { $count: "total" },
+      ]);
+
+      const totalOrganization = totalDocs.length > 0 ? totalDocs[0].total : 0;
+
+      return sendSuccessResponse(
+        res,
+        "Organizations retrieved successfully!",
+        {
+          orgnization,
+          totalPages: Math.ceil(totalOrganization / limit),
+          currentPage: page,
+          totalOrganization,
+        },
+        HTTP_STATUS_CODE.OK
+      );
+    } else {
+      // Without search, simpler query
+      const orgnization = await Organization.aggregate([
+        { $match: matchQuery },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "address_id",
+            foreignField: "_id",
+            as: "addresses",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            organizationName: 1,
+            managerName: 1,
+            register_number: 1,
+            contact_number: 1,
+            email: 1,
+            organizationLogo: 1,
+            addresses: 1,
+            no_of_employees: 1,
+          },
+        },
+      ]);
+
+      const totalOrganization = await Organization.countDocuments(matchQuery);
+
+      return sendSuccessResponse(
+        res,
+        "Organizations retrieved successfully!",
+        {
+          orgnization,
+          totalPages: Math.ceil(totalOrganization / limit),
+          currentPage: page,
+          totalOrganization,
+        },
+        HTTP_STATUS_CODE.OK
+      );
+    }
   } catch (error) {
     sendErrorResponse(
       res,

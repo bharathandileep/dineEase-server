@@ -132,63 +132,161 @@ export const handleCreateNewKitchens = async (
   }
 };
 
-export const handleGetKitchens = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const handleGetKitchens = async (req: Request, res: Response): Promise<any> => {
   try {
-    // Pagination parameters
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 4;
     const skip = (page - 1) * limit;
 
-    // Optional filters
     const matchQuery: any = { is_deleted: false };
-    if (req.query.kitchen_status)
-      matchQuery.kitchen_status = req.query.kitchen_status;
-    if (req.query.kitchen_type)
-      matchQuery.kitchen_type = req.query.kitchen_type;
 
-    const kitchens = await Kitchen.aggregate([
-      { $match: matchQuery },
-      { $skip: skip },
-      { $limit: limit },
-      {
-        $lookup: {
-          from: "addresses",
-          localField: "address_id",
-          foreignField: "_id",
-          as: "addresses",
+    if (req.query.kitchen_status) matchQuery.kitchen_status = req.query.kitchen_status;
+    if (req.query.kitchen_type) matchQuery.kitchen_type = req.query.kitchen_type;
+
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search as string, "i");
+
+      const kitchenMatch = {
+        $or: [
+          { kitchen_name: searchRegex },
+          { kitchen_owner_name: searchRegex },
+          { kitchen_type: searchRegex },
+          { kitchen_phone_number: searchRegex },
+          { owner_email: searchRegex },
+        ],
+      };
+
+      const kitchens = await Kitchen.aggregate([
+        { $match: matchQuery },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "address_id",
+            foreignField: "_id",
+            as: "addresses",
+          },
         },
-      },
-      {
-        $project: {
-          _id: 1,
-          kitchen_name: 1,
-          kitchen_owner_name: 1,
-          kitchen_type: 1,
-          kitchen_phone_number: 1,
-          kitchen_image: 1,
-          addresses: 1,
-          owner_email: 1,
-          kitchen_status: 1,
+        { $unwind: { path: "$addresses", preserveNullAndEmptyArrays: true } },
+        {
+          $match: {
+            $or: [
+              kitchenMatch,
+              { "addresses.street_address": searchRegex },
+              { "addresses.city": searchRegex },
+              { "addresses.country": searchRegex },
+            ],
+          },
         },
-      },
-    ]);
+        {
+          $group: {
+            _id: "$_id",
+            kitchen_name: { $first: "$kitchen_name" },
+            kitchen_owner_name: { $first: "$kitchen_owner_name" },
+            kitchen_type: { $first: "$kitchen_type" },
+            kitchen_phone_number: { $first: "$kitchen_phone_number" },
+            kitchen_image: { $first: "$kitchen_image" },
+            owner_email: { $first: "$owner_email" },
+            kitchen_status: { $first: "$kitchen_status" },
+            addresses: { $push: "$addresses" },
+          },
+        },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $project: {
+            _id: 1,
+            kitchen_name: 1,
+            kitchen_owner_name: 1,
+            kitchen_type: 1,
+            kitchen_phone_number: 1,
+            kitchen_image: 1,
+            addresses: 1,
+            owner_email: 1,
+            kitchen_status: 1,
+          },
+        },
+      ]);
 
-    const totalKitchens = await Kitchen.countDocuments(matchQuery);
+      const totalDocs = await Kitchen.aggregate([
+        { $match: matchQuery },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "address_id",
+            foreignField: "_id",
+            as: "addresses",
+          },
+        },
+        { $unwind: { path: "$addresses", preserveNullAndEmptyArrays: true } },
+        {
+          $match: {
+            $or: [
+              kitchenMatch,
+              { "addresses.street_address": searchRegex },
+              { "addresses.city": searchRegex },
+              { "addresses.country": searchRegex },
+            ],
+          },
+        },
+        { $group: { _id: "$_id" } },
+        { $count: "total" },
+      ]);
 
-    sendSuccessResponse(
-      res,
-      "Kitchens retrieved successfully!",
-      {
-        kitchens,
-        totalPages: Math.ceil(totalKitchens / limit),
-        currentPage: page,
-        totalKitchens,
-      },
-      HTTP_STATUS_CODE.OK
-    );
+      const totalKitchens = totalDocs.length > 0 ? totalDocs[0].total : 0;
+
+      sendSuccessResponse(
+        res,
+        "Kitchens retrieved successfully!",
+        {
+          kitchens,
+          totalPages: Math.ceil(totalKitchens / limit),
+          currentPage: page,
+          totalKitchens,
+        },
+        HTTP_STATUS_CODE.OK
+      );
+    } else {
+      const kitchens = await Kitchen.aggregate([
+        { $match: matchQuery },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "address_id",
+            foreignField: "_id",
+            as: "addresses",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            kitchen_name: 1,
+            kitchen_owner_name: 1,
+            kitchen_type: 1,
+            kitchen_phone_number: 1,
+            kitchen_image: 1,
+            addresses: 1,
+            owner_email: 1,
+            kitchen_status: 1,
+          },
+        },
+      ]);
+
+      const totalKitchens = await Kitchen.countDocuments(matchQuery);
+
+      sendSuccessResponse(
+        res,
+        "Kitchens retrieved successfully!",
+        {
+          kitchens,
+          totalPages: Math.ceil(totalKitchens / limit),
+          currentPage: page,
+          totalKitchens,
+        },
+        HTTP_STATUS_CODE.OK
+      );
+    }
   } catch (error) {
     sendErrorResponse(
       res,
@@ -198,7 +296,6 @@ export const handleGetKitchens = async (
     );
   }
 };
-
 export const handleGetKitchensById = async (
   req: Request,
   res: Response
