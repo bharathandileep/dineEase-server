@@ -8,7 +8,7 @@ import {
 } from "../../lib/helpers/responseHelper";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 import EmployeeManagement from "../../models/empmanagment/EmployeeManagementModel";
-import Designation from "../../models/designation/designationModel";
+import Designation from "../../models/designation/DesignationModel";
 import Address from "../../models/address/AddressModel";
 import {
   createAddressAndUpdateModel,
@@ -24,13 +24,22 @@ import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndEmailOtp
 // Get all employees
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
-   
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 8; 
     const skip = (page - 1) * limit;
 
-
     const matchQuery: any = { is_deleted: false };
+
+    // Add search functionality
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search as string, 'i');
+      matchQuery.$or = [
+        { username: searchRegex },
+        { email: searchRegex },
+        { phone_number: searchRegex }
+      ];
+    }
+
     if (req.query.designation) {
       matchQuery.designation = req.query.designation;
     }
@@ -83,7 +92,6 @@ export const getAllEmployees = async (req: Request, res: Response) => {
     );
   }
 };
-
 // Create new employee
 export const createEmployee = async (req: Request, res: Response) => {
   try {

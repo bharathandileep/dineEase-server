@@ -6,7 +6,7 @@ import {
   getEmployeeById,
   toggleEmployeeStatus,
   updateEmployee,
-} from "../../controllers/empmanagment/empmanagmentcontroller";
+} from "../../controllers/empmanagment/empmanagmentController";
 import { apiConfig } from "../../config/endpoint ";
 import upload from "../../lib/helpers/uploadMiddleware";
 

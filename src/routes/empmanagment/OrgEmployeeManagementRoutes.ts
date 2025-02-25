@@ -6,7 +6,7 @@ import {
     getOrgEmployeeById,
   toggleOrgEmployeeStatus,
   updateOrgEmployee,
-} from "../../controllers/empmanagment/orgempmanagmentcontroller";
+} from "../../controllers/empmanagment/orgempmanagmentController";
 import { apiConfig } from "../../config/endpoint ";
 import upload from "../../lib/helpers/uploadMiddleware";
 

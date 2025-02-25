@@ -16,7 +16,11 @@ export const kitchenGetAllSubCategories = async (req: Request, res: Response) =>
     const limit = parseInt(req.query.limit as string) || 10;
     const startIndex = (page - 1) * limit;
     const total = await kitchenSubcategory.countDocuments({});
-    const categories = await kitchenSubcategory.find().populate("category", "category").skip(startIndex).limit(limit);
+    
+    const categories = await kitchenSubcategory.find()
+      .populate("category", "category status") // Ensure status is included if needed
+      .skip(startIndex)
+      .limit(limit);
 
     const pagination = {
       currentPage: page,
@@ -30,6 +34,7 @@ export const kitchenGetAllSubCategories = async (req: Request, res: Response) =>
     sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
+
 
 // Create subcategory
 export const kitchenCreateSubcategory = async (req: Request, res: Response) => {

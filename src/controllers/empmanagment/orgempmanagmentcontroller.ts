@@ -7,7 +7,7 @@ import {
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
 import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
-import Designation from "../../models/designation/designationModel";
+import Designation from "../../models/designation/DesignationModel";
 import Address from "../../models/address/AddressModel";
 import {
   createAddressAndUpdateModel,
@@ -26,8 +26,18 @@ export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 8; 
     const skip = (page - 1) * limit;
 
-
     const matchQuery: any = { is_deleted: false };
+
+    // Add search functionality
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search as string, 'i');
+      matchQuery.$or = [
+        { username: searchRegex },
+        { email: searchRegex },
+        { phone_number: searchRegex }
+      ];
+    }
+
     if (req.query.designation) {
       matchQuery.designation = req.query.designation;
     }

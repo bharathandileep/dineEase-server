@@ -7,7 +7,7 @@ import {
   sendErrorResponse,
   sendSuccessResponse,
 } from "../../lib/helpers/responseHelper";
-import Designation from "../../models/designation/designationModel";
+import Designation from "../../models/designation/DesignationModel";
 import Role from "../../models/users/RolesModels";
 
 
