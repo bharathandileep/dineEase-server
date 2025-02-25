@@ -54,15 +54,29 @@ app.use(`${apiConfig.baseAPIUrl}/kitchens-menu`, kitchensMenuRoutes);
 
 
 
-// Health check route
-app.get(`${apiConfig.baseAPIUrl}/health`, (req, res) => {
-  sendSuccessResponse(
-    res,
-    "The server is up and running. All systems are operational."
-  );
+
+
+
+app.get(`/`, (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Server Status</title>
+      <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .status { font-size: 24px; color: green; }
+      </style>
+    </head>
+    <body>
+      <h1 class="status">The server is up and running.</h1>
+      <p>All systems are operational.</p>
+    </body>
+    </html>
+  `);
 });
-
-
 
 // 404 Error handler for all non-existing routes
 app.use("*", (req, res, next) => {

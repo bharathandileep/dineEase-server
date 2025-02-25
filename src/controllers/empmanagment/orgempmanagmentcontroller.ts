@@ -16,7 +16,8 @@ import {
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
 import OrgEmployeeManagement from "../../models/empmanagment/OrgEmployeeManagementModel";
-import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndSendEmail";
+import { registerUser } from "../auth/loginsController";
+import Role from "../../models/users/RolesModels";
 
 // Get all employees
 export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
@@ -41,7 +42,7 @@ export const getAllEmployeesOfOrg = async (req: Request, res: Response) => {
         },
       },
     ]);
-    
+
     sendSuccessResponse(
       res,
       "Employees retrieved successfully",
@@ -63,7 +64,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
   try {
     const {
       entity_id,
-      entity_type = "Organization",
+      entity_type = "Admin",
       designation,
       username,
       email,
@@ -74,7 +75,6 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       pincode,
       country,
       street_address,
-      role = "",
       employee_status = "Active",
       aadhar_number,
       pan_number,
@@ -82,6 +82,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
+    // Validate required fields
     if (
       !entity_id ||
       !entity_type ||
@@ -103,6 +104,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
 
     validateMogooseObjectId(entity_id);
 
+    // Fetch and validate designation
     const existingDesignation = await Designation.findById(designation);
     if (!existingDesignation) {
       throw new CustomError(
@@ -113,6 +115,20 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       );
     }
 
+    // Fetch and validate role based on designation
+    const existingRole = await Role.findOne({
+      role_name: existingDesignation.role_name,
+    });
+    if (!existingRole) {
+      throw new CustomError(
+        "Role not found for the given designation",
+        HTTP_STATUS_CODE.NOT_FOUND,
+        ERROR_TYPES.NOT_FOUND_ERROR,
+        false
+      );
+    }
+
+    // Check for existing employee
     const existingEmployee = await OrgEmployeeManagement.findOne({ email });
     if (existingEmployee) {
       throw new CustomError(
@@ -123,16 +139,18 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       );
     }
 
+    // Upload files to Cloudinary
     const profile_picture = await uploadFileToCloudinary(
-      files.profile_picture[0].buffer
+      files.profile_picture?.[0]?.buffer
     );
     const pan_image = await uploadFileToCloudinary(
-      files.pan_image[0].buffer
+      files.pan_image?.[0]?.buffer
     );
     const aadhar_image = await uploadFileToCloudinary(
-      files.aadhar_image[0].buffer
+      files.aadhar_image?.[0]?.buffer
     );
 
+    // Create new employee
     const newEmployee = new OrgEmployeeManagement({
       entity_id,
       entity_type,
@@ -140,7 +158,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       username,
       email,
       phone_number,
-      role,
+      role: existingRole.role_id,
       employee_status,
       aadhar_number,
       pan_number,
@@ -150,7 +168,6 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
     });
 
     const empDetails = await newEmployee.save();
-
     await createAddressAndUpdateModel(OrgEmployeeManagement, empDetails._id, {
       street_address,
       city,
@@ -159,19 +176,7 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
       pincode,
       country,
     });
-     
-    
-    // Send email notification
-    const emailResponse = await sendEmployeeCreationEmail(
-      email,
-      username,
-      existingDesignation.designation_name
-    );
-
-    if (!emailResponse.success) {
-      console.error("Error sending email:", emailResponse.error);
-    }
-
+    await registerUser(email, username, existingRole.role_id, existingRole._id);
     sendSuccessResponse(
       res,
       "Employee created successfully",
@@ -188,7 +193,6 @@ export const createOrgEmployee = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getOrgEmployeeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -204,7 +208,7 @@ export const getOrgEmployeeById = async (req: Request, res: Response) => {
       {
         $lookup: {
           from: "addresses",
-          localField: "address_id", 
+          localField: "address_id",
           foreignField: "_id",
           as: "address",
         },
@@ -300,9 +304,7 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
       updateData.profile_picture = profile_picture;
     }
     if (files && files.pan_image) {
-      const pan_image = await uploadFileToCloudinary(
-        files.pan_image[0].buffer
-      );
+      const pan_image = await uploadFileToCloudinary(files.pan_image[0].buffer);
       updateData.pan_image = pan_image;
     }
     if (files && files.aadhar_image) {
@@ -338,8 +340,8 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
       { new: true }
     )
       .populate("designation", "designation_name")
-      .populate("address_id", "street city state country")
-    
+      .populate("address_id", "street city state country");
+
     if (!updatedEmployee) {
       throw new CustomError(
         "Employee not found",
@@ -382,7 +384,7 @@ export const toggleOrgEmployeeStatus = async (req: Request, res: Response) => {
     }
 
     orgemployees.employee_status =
-    orgemployees.employee_status === "Active" ? "Inactive" : "Active";
+      orgemployees.employee_status === "Active" ? "Inactive" : "Active";
     await orgemployees.save();
 
     sendSuccessResponse(

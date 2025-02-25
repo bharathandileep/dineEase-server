@@ -52,38 +52,6 @@ export const generateAndEmailForgotOtp = async (email: string, fullName: string)
   }
 };
 
-export const sendEmployeeCreationEmail = async (
-  email: string,
-  fullName: string,
-  designation: string
-) => {
-  const mailOptions = {
-    from: mailId,
-    to: email,
-    subject: "Welcome to the Organization - Dineeas",
-    text: `Dear ${fullName},\n\nYou have been successfully added to the organization as ${designation}.\n\nPlease log in to your account for further details.\n\nBest Regards,\nDineeas Team`,
-    html: `<p>Dear <strong>${fullName}</strong>,</p>
-           <p>You have been successfully added to the organization as <strong>${designation}</strong>.</p>
-           <p>Please log in to your account for further details.</p>
-           <p>Best Regards,<br/>Dineeas Team</p>`,
-  };
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: mailId,
-      pass: mailPassword,
-    },
-  });
-
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    return { success: true, info };
-  } catch (error) {
-    return { success: false, error };
-  }
-};
-
 export const sendResetPasswordEmail = async (
   email: string,
   fullName: string
