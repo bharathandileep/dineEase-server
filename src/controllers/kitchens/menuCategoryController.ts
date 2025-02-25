@@ -56,20 +56,22 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await MenuCategory.find();
-    sendSuccessResponse(
-      res,
-      "Categories retrieved successfully",
-      categories,
-      HTTP_STATUS_CODE.OK
-    );
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await MenuCategory.countDocuments({});
+    const categories = await MenuCategory.find().skip(startIndex).limit(limit);
+
+    const pagination = {
+      currentPage: page,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      itemsPerPage: limit,
+    };
+
+    sendSuccessResponse(res, "Categories retrieved successfully", { categories, pagination }, HTTP_STATUS_CODE.OK);
   } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
+    sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
 

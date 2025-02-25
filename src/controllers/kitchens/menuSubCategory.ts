@@ -12,25 +12,25 @@ import { validateMogooseObjectId } from "../../lib/helpers/validateObjectid";
 
 export const getAllSubCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await MenuSubcategory.find().populate(
-      "category",
-      "category status"
-    );
-    sendSuccessResponse(
-      res,
-      "Categories retrieved successfully",
-      categories,
-      HTTP_STATUS_CODE.OK
-    );
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const startIndex = (page - 1) * limit;
+    const total = await MenuSubcategory.countDocuments({});
+    const categories = await MenuSubcategory.find().populate("category", "category status").skip(startIndex).limit(limit);
+
+    const pagination = {
+      currentPage: page,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      itemsPerPage: limit,
+    };
+
+    sendSuccessResponse(res, "Categories retrieved successfully", { categories, pagination }, HTTP_STATUS_CODE.OK);
   } catch (error) {
-    sendErrorResponse(
-      res,
-      error,
-      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-      ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-    );
+    sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
   }
 };
+
 
 // Create subcategory
 export const createSubcategory = async (req: Request, res: Response) => {
