@@ -8,6 +8,8 @@ import { CustomError } from "./lib/errors/customError";
 import { HTTP_STATUS_CODE } from "./lib/constants/httpStatusCodes";
 import { ERROR_TYPES } from "./lib/constants/errorType";
 import { sendSuccessResponse } from "./lib/helpers/responseHelper";
+import employeeManagementRoutes from "./routes/empmanagment/employeeManagementRoutes";
+import orgEmployeeManagementRoutes from "./routes/empmanagment/orgEmployeeManagementRoutes";
 
 import authRoute from "./routes/AuthRoute";
 import kitchensRoute from "./routes/kitchen/kitchensRoutes";
@@ -15,8 +17,7 @@ import organizationRoute from "./routes/organization/organizationRoute";
 import menuCategoryRoutes from "./routes/kitchen/categoryRoutes";
 import menuSubCategoryRoutes from "./routes/kitchen/subcategoryRoutes";
 import designationRoutes from "./routes/designation/designationRoutes";
-import EmployeeManagementRoutes from "./routes/empmanagment/EmployeeManagementRoutes";
-import OrgEmployeeManagementRoutes from "./routes/empmanagment/OrgEmployeeManagementRoutes";
+
 import menuitemsRoutes from "./routes/menuitems/menuitemsRoutes";
 import kitchensMenuRoutes from "./routes/kitchen/kitchensMenuRoutes";
 import { clientOrigin } from "./config/environment";
@@ -39,16 +40,16 @@ app.use(`${apiConfig.baseAPIUrl}/menu-category`, menuCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/sub-menu-category`, menuSubCategoryRoutes);
 app.use(`${apiConfig.baseAPIUrl}/designation`, designationRoutes);
 app.use(`${apiConfig.baseAPIUrl}/organization`, organizationRoute);
-app.use(`${apiConfig.baseAPIUrl}/employee`, EmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/employee`, employeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
-app.use(`${apiConfig.baseAPIUrl}/orgemployee`, OrgEmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/orgemployee`, orgEmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/kitchens-menu`, kitchensMenuRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
-app.use(`${apiConfig.baseAPIUrl}/org-employee`, OrgEmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/org-employee`, orgEmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/menu-items`,menuitemsRoutes)
-app.use(`${apiConfig.baseAPIUrl}/org-employee`,OrgEmployeeManagementRoutes)
+app.use(`${apiConfig.baseAPIUrl}/org-employee`,orgEmployeeManagementRoutes)
 app.use(`${apiConfig.baseAPIUrl}/menu-items`, menuitemsRoutes);
-app.use(`${apiConfig.baseAPIUrl}/orgemployee`, OrgEmployeeManagementRoutes);
+app.use(`${apiConfig.baseAPIUrl}/orgemployee`, orgEmployeeManagementRoutes);
 app.use(`${apiConfig.baseAPIUrl}/kitchens-menu`, kitchensMenuRoutes);
 
 // Health check route

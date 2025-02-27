@@ -102,10 +102,12 @@ export const listItems = async (req: Request, res: Response) => {
   };
 
   // Get item by ID
-export const getItemById = async (req: Request, res: Response) => {
+  export const getItemById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const item = await Item.findById(id);
+        const item = await Item.findById(id)
+            .populate("category", "category") 
+            .populate("subcategory", "subcategoryName");
 
         if (!item || item.is_deleted) {
             throw new CustomError(
@@ -121,6 +123,7 @@ export const getItemById = async (req: Request, res: Response) => {
         sendErrorResponse(res, error, HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE);
     }
 };
+
 
 
 export const updateItem = async (req: Request, res: Response) => {
