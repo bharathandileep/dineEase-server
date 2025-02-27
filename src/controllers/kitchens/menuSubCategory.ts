@@ -99,7 +99,6 @@ export const getSubcategoriesByCategory = async (
 ) => {
   try {
     const { categoryId } = req.params;
-
     validateMogooseObjectId(categoryId);
 
     const category = await MenuCategory.findOne({
@@ -203,49 +202,11 @@ export const updateSubcategory = async (req: Request, res: Response) => {
   }
 };
 
-// Toggle subcategory status
-// export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
-
-//     const subcategory = await MenuSubcategory.findById(id);
-//     if (!subcategory) {
-//       throw new CustomError(
-//         "Subcategory not found",
-//         HTTP_STATUS_CODE.NOT_FOUND,
-//         ERROR_TYPES.NOT_FOUND_ERROR,
-//         false
-//       );
-//     }
-
-//     const updatedSubcategory = await MenuSubcategory.findByIdAndUpdate(
-//       id,
-//       { status: !subcategory.status },
-//       { new: true }
-//     ).populate("category", "category status");
-
-//     sendSuccessResponse(
-//       res,
-//       `Subcategory status ${
-//         updatedSubcategory?.status ? "activated" : "deactivated"
-//       } successfully`,
-//       updatedSubcategory,
-//       HTTP_STATUS_CODE.OK
-//     );
-//   } catch (error) {
-//     sendErrorResponse(
-//       res,
-//       error,
-//       HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-//       ERROR_TYPES.INTERNAL_SERVER_ERROR_TYPE
-//     );
-//   }
-// };
 
 export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
+    console.log(id)
     const subcategory = await MenuSubcategory.findById(id).populate<{
       category: any;
     }>("category", "category status");
@@ -296,7 +257,7 @@ export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
 // Delete subcategory
 export const deleteSubcategory = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; 
 
     const subcategory = await MenuSubcategory.findById(id);
     if (!subcategory) {
