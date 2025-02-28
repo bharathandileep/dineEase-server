@@ -16,7 +16,6 @@ import {
 } from "../../lib/helpers/addressUpdater";
 import { uploadFileToCloudinary } from "../../lib/utils/cloudFileManager";
 import mongoose from "mongoose";
-import { sendEmployeeCreationEmail } from "../../lib/helpers/generateAndSendEmail";
 import Role from "../../models/users/RolesModels";
 import { registerUser } from "../auth/loginsController";
 
@@ -43,6 +42,9 @@ export const getAllEmployees = async (req: Request, res: Response) => {
         },
       },
     ]);
+    
+    const matchQuery = { is_deleted: false };
+    const totalEmployees = await EmployeeManagement.countDocuments(matchQuery);
 
     sendSuccessResponse(
       res,
@@ -259,7 +261,6 @@ export const getEmployeeById = async (req: Request, res: Response) => {
     );
   }
 };
-
 // Update employee
 export const updateEmployee = async (req: Request, res: Response) => {
   try {
@@ -363,7 +364,6 @@ export const updateEmployee = async (req: Request, res: Response) => {
     );
   }
 };
-
 // Toggle employee status
 export const toggleEmployeeStatus = async (req: Request, res: Response) => {
   try {
@@ -399,7 +399,6 @@ export const toggleEmployeeStatus = async (req: Request, res: Response) => {
     );
   }
 };
-
 // Soft delete employee
 export const deleteEmployee = async (req: Request, res: Response) => {
   try {
