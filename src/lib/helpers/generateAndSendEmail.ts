@@ -27,7 +27,7 @@ export const generateAndEmailOtp = async (email: string, fullName: string) => {
     );
     return isMailSend;
   } catch (error) {
-    return { success: false, error };
+    return { success: false, error }; 
   }
 };
 
