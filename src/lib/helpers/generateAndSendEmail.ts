@@ -20,9 +20,9 @@ export const generateAndEmailOtp = async (email: string, fullName: string) => {
   const isMailSend = await sendEmail({ email, subject, html, text });
   try {
     const hashedOtp = await hashPassword(generatedOTP);
-    await Otp.findOneAndUpdate(
+    await Otp.findOneAndUpdate( 
       { email },
-      { fullName, otp: hashedOtp, expiresAt, attempts: 0 },
+      { fullName, otp: hashedOtp, expiresAt, attempts: 0 }, 
       { upsert: true, new: true }
     );
     return isMailSend;
