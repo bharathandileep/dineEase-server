@@ -37,7 +37,7 @@ export const generateAndEmailForgotOtp = async (email: string, fullName: string)
   const subject = "Your Account Verification Code - Dineeas";
   const text = `Your OTP is: ${generatedOTP}`;
   const html = forgotPassHtml(generatedOTP);
-  console.log(email,fullName)
+
   const isMailSend = await sendEmail({ email, subject, html, text });
   try {
     const hashedOtp = await hashPassword(generatedOTP);

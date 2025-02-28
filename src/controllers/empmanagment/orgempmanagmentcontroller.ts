@@ -308,8 +308,7 @@ export const updateOrgEmployee = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; // Handle file uploads
-    console.log(req.body);
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }; 
     validateMogooseObjectId(id);
 
     // Check if designation exists
