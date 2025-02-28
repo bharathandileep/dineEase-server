@@ -85,7 +85,7 @@ export const addMenuItems = async (req: Request, res: Response) => {
     }
     await existingMenu.save();
 
-    return sendSuccessResponse(
+  return sendSuccessResponse(
       res,
       "Items added to menu successfully",
       existingMenu,
