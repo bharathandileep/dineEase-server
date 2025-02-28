@@ -82,7 +82,7 @@ export const sendResetPasswordEmail = async (
       { upsert: true, new: true }
     );
 
-    const info = await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions); 
     return { success: true, info };
   } catch (error) {
     return { success: false, error };
