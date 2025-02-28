@@ -1,6 +1,6 @@
 
-import PasswordReset from "../../models/users/forgotOtpModel";
 import Otp from "../../models/users/OTPSModel";
+import PasswordOTPResetOTP from "../../models/users/passwordResetOTP";
 import User from "../../models/users/UserModel";
 import { ERROR_TYPES } from "../constants/errorType";
 import { HTTP_STATUS_CODE } from "../constants/httpStatusCodes";
@@ -52,7 +52,7 @@ export const validateOtp = async (email: string, otp: string) => {
   }
 };
 export const validateForgotOtp = async (email: string, otp: string) => {
-  const otpDoc = await PasswordReset.findOne({ email });
+  const otpDoc = await PasswordOTPResetOTP.findOne({ email });
   if (!otpDoc) {
     throw new CustomError(
       "The verification code you entered is incorrect. Please try again.",

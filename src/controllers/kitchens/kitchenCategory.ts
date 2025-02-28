@@ -247,3 +247,6 @@ export const kitchenDeleteCategory = async (req: Request, res: Response) => {
     );
   }
 };
+
+
+

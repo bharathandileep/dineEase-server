@@ -131,7 +131,6 @@ export const getSubcategoriesByCategory = async (
 ) => {
   try {
     const { categoryId } = req.params;
-
     validateMogooseObjectId(categoryId);
 
     const category = await MenuCategory.findOne({
@@ -235,17 +234,30 @@ export const updateSubcategory = async (req: Request, res: Response) => {
   }
 };
 
-// Toggle subcategory status
+
 export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    console.log(id)
+    const subcategory = await MenuSubcategory.findById(id).populate<{
+      category: any;
+    }>("category", "category status");
 
-    const subcategory = await MenuSubcategory.findById(id);
     if (!subcategory) {
       throw new CustomError(
         "Subcategory not found",
         HTTP_STATUS_CODE.NOT_FOUND,
         ERROR_TYPES.NOT_FOUND_ERROR,
+        false
+      );
+    }
+ 
+    const newStatus = !subcategory.status;
+    if (newStatus && !subcategory.category.status) {
+      throw new CustomError(
+        "Cannot activate subcategory when parent category is inactive",
+        HTTP_STATUS_CODE.BAD_REQUEST,
+        ERROR_TYPES.VALIDATION_ERROR,
         false
       );
     }
@@ -276,7 +288,7 @@ export const toggleSubcategoryStatus = async (req: Request, res: Response) => {
 
 export const deleteSubcategory = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; 
 
     const subcategory = await MenuSubcategory.findById(id);
     if (!subcategory) {

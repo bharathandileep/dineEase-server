@@ -7,6 +7,8 @@ export interface IKitchen extends Document, CommonDBInterface {
   kitchen_owner_name: string;
   address_id: mongoose.Types.ObjectId;
   owner_email: string;
+  category:mongoose.Schema.Types.ObjectId;
+  subcategoryName:mongoose.Schema.Types.ObjectId;
   owner_phone_number: string;
   restaurant_type: string;
   kitchen_type: "Veg" | "Non-Veg" | "Both";
@@ -37,6 +39,16 @@ export const KitchenSchema: Schema = new Schema<IKitchen>({
   kitchen_status: { type: String, required: true },
   kitchen_owner_name: { type: String, required: true },
   owner_email: { type: String, required: true },
+  category:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"KitchenCategory",
+    required:true,
+  },
+  subcategoryName:{
+     type:mongoose.Schema.Types.ObjectId,
+     ref:"KitchenSubcategory",
+     required:true,
+  },
   owner_phone_number: { type: String, required: true },
   restaurant_type: { type: String, required: true },
   kitchen_type: {
@@ -53,6 +65,7 @@ export const KitchenSchema: Schema = new Schema<IKitchen>({
     type: Boolean,
     default: false,
   },
+ 
   kitchen_image: { type: String, required: true },
   working_days: [
     {
@@ -70,6 +83,7 @@ export const KitchenSchema: Schema = new Schema<IKitchen>({
       delivery_time: { type: String, required: true },
     },
   ],
+  
 });
 
 const Kitchen: Model<IKitchen> = mongoose.model<IKitchen>(

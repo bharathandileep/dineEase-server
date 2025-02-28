@@ -6,7 +6,7 @@ import {
 } from "../../lib/helpers/responseHelper";
 import { HTTP_STATUS_CODE } from "../../lib/constants/httpStatusCodes";
 import { ERROR_TYPES } from "../../lib/constants/errorType";
-import { generateAndEmailOtp } from "../../lib/helpers/generateAndEmailOtp";
+import { generateAndEmailOtp } from "../../lib/helpers/generateAndSendEmail";
 import { validateOtp } from "../../lib/utils/otpValidator";
 import User from "../../models/users/UserModel";
 import { appendRefreshTokenCookies } from "../../lib/utils/attachAuthToken";
@@ -15,8 +15,7 @@ import {
   accessTokenExpiration,
   accessTokenSecret,
 } from "../../config/environment";
-import Admin from "../../models/users/adminModel";
-import { hashPassword } from "../../lib/helpers/generatePasswordHash";
+
 
 export const handleGoogleAuth = async (
   req: Request,

@@ -7,17 +7,16 @@ export const apiConfig = {
     verifyOtp: "/verify-otp",
     verifyLoginOtp: "/verify-loginotp",
     logout: "/logout",
+
     adminLogin: "/admin/login",
     adminRegister: "/admin/register",
     accessToken: "/new/access-token",
     forgotPassword: "/admin/forgot-password",
     verifyForgotOtp: "/admin/verify-password",
     updatePassword: "/admin/update-password",
-  },
-  users: {
-    getUser: "/users/:id",
-    createUser: "/users",
-    updateUser: "/users/:id",
+    
+    userLogins:"/access/login",
+    userRegister:"/access/register"
   },
   kitchens: {
     newkitchens: "/new",
@@ -39,6 +38,9 @@ export const apiConfig = {
     updateSubcategory: "/subcategories/:id",
     deleteSubcategory: "/subcategories/:id",
     toggleSubcategoryStatus: "/subcategories/:id/toggle-status",
+
+    
+
   },
   menu: {
     createCategory: "/categories",
@@ -110,6 +112,14 @@ export const apiConfig = {
     deleteOrgEmployee: "/orgemployee/:id",
     toggleOrgEmployeeStatus: "/orgemployee/:id/toggle-status",
   },
+  addressDetails:{
+     getAllCountries: "/allcountries",
+    getStatesByCountry: "/states/:countryName",
+    getCitiesByState: "/cities/:stateName",
+    getDistrictsByState:"/districts/:stateId",
+    //getcitiesByDistricts:"/cities/:districtName"
+  },
+
   kitchenMenu: {
     getKitchenMenu: "/kitchen-menu/:kitchenId",
     createkitchenMenu: "/kitchen-menu/:id",

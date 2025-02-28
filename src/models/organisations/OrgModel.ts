@@ -6,6 +6,8 @@ export interface IOrganization extends Document, CommonDBInterface {
   user_id: mongoose.Types.ObjectId;
   address_id: mongoose.Types.ObjectId;
   organizationName: string;
+  category:mongoose.Schema.Types.ObjectId;
+  subcategoryName:mongoose.Schema.Types.ObjectId;
   managerName: string;
   register_number: string;
   location: string;
@@ -30,6 +32,16 @@ export const OrganizationSchema: Schema<IOrganization> =
           required: true,
         },
       ],
+      category:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"OrgCategory",
+        required:true,
+      },
+      subcategoryName:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"OrgSubcategory",
+        required:true,
+      },
       organizationName: {
         type: String,
         required: true,
