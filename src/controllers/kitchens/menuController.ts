@@ -89,7 +89,7 @@ export const addMenuItems = async (req: Request, res: Response) => {
       res,
       "Items added to menu successfully",
       existingMenu,
-      HTTP_STATUS_CODE.OK
+      HTTP_STATUS_CODE.OK 
     );
   } catch (error) {
     sendErrorResponse(
